@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_search_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.search.form.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="qty_per_sku" string="Is set" filter_domain="[('qty_per_sku', '=', self)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_category_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.category.form.inherit</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="product_category_code" required="1" class="oe_inline"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="product_code_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="product_sku" required="1"/>
+            </xpath>
+            <xpath expr="//field[@name='type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='barcode']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@class='oe_title']/div[@name='options']" position="inside">
+                <div>
+                    <field name="is_product_set"/>
+                    <label for="is_product_set"/>
+                </div>
+            </xpath>
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Variant Of Set" attrs="{'invisible':[('is_product_set','=',False)]}"
+                      name="product_of_set">
+                    <field name="set_product_ids" nolabel="1">
+                        <tree>
+                            <field name="root_product_id"/>
+                            <field name="product_sku"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_normal_tree_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.tree.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="priority">19</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="product_sku"/>
+            </xpath>
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='standard_price']" position="after">
+                <field name="compare_price"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_variant_easy_edit_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.easy.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='codes']" position="replace">
+                <group name="codes" string="Codes">
+                    <field name="product_sku" required="1"/>
+                    <field name="type" invisible="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product.product_normal_action_sell" model="ir.actions.act_window">
+        <field name="name">Product Variants</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+        <field name="context">{}</field>
+        <field name="view_id" ref="product.product_kanban_view"/>
+        <field name="search_view_id" ref="product.product_search_form_view"/>
+        <field name="context">{"search_default_consumable": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new product variant
+            </p>
+            <p>
+                You must define a product for everything you sell, whether it's a physical product,
+                a consumable or a service you offer to customers.
+                The product form contains information to simplify the sale process:
+                price, notes in the quotation, accounting data, procurement methods, etc.
+            </p>
+        </field>
+    </record>
+</odoo>

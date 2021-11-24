@@ -1,0 +1,44 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<odoo>
+    <data>
+        <record id="res_partner_supplier_form_view_inherit" model="ir.ui.view">
+            <field name="name">res.partner.supplier.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority">12</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="capacity" attrs="{'invisible': [('supplier_rank', '!=', 1)]}"/>
+                    <field name="sale_order_ffm_count" readonly="1"
+                           attrs="{'invisible': [('supplier_rank', '!=', 1)]}"/>
+<!--                    <field name="capacity_so_ffm" readonly="1"-->
+<!--                           attrs="{'invisible': [('supplier_rank', '!=', 1)]}"/>-->
+                    <field name="supplier_rank" invisible="1" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--Action of res partner-->
+        <record id="asiup_purchase_supplier_action" model="ir.actions.act_window">
+            <field name="name">Supplier</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('supplier_rank','=',1)]</field>
+            <field name="context">{'res_partner_search_mode': 'supplier','default_is_company':
+                True,'default_supplier_rank':1 , 'search_default_supplier': 1}
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Supplier
+                </p>
+                <p>
+                    Odoo helps you easily track all activities related to a customer.
+                </p>
+            </field>
+        </record>
+
+
+        
+    </data>
+</odoo>

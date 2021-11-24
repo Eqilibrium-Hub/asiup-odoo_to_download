@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="refund_request_search_view_inherit_woo" model="ir.ui.view">
+        <field name="name">refund.request.search.inherit.woo</field>
+        <field name="model">refund.request</field>
+        <field name="inherit_id" ref="asiup_shopbase_integration.refund_request_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='search_shopbase_refund']" position="after">
+                <separator/>
+                <filter string="Woo Refund" name="is_woo_refund" domain="[('woo_order_id', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="refund_request_form_view_inherit_woo" model="ir.ui.view">
+        <field name="name">refund.request.form.woo</field>
+        <field name="model">refund.request</field>
+        <field name="inherit_id" ref="asiup_shopbase_integration.refund_request_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='shopbase_info']" position="after">
+                <group name="shopbase_info" attrs="{'invisible': [('woo_order_id', '=', False)]}">
+                    <group>
+                        <field name="woo_instance_id" />
+                        <field name="woo_order_id"/>
+                        <field name="payment_gateway_id"/>
+                    </group>
+                    <group>
+                        <field name="woo_refund_id"/>
+                        <field name="refund_woo_at"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="refund_request_tree_view_inherit_woo" model="ir.ui.view">
+        <field name="name">refund.request.tree.woo</field>
+        <field name="model">refund.request</field>
+        <field name="inherit_id" ref="asiup_shopbase_integration.refund_request_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_gateway_id']" position="after">
+                <field name="payment_gateway_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

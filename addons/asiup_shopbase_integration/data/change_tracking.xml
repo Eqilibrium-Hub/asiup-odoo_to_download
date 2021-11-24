@@ -1,0 +1,217 @@
+<odoo>
+    <data>
+        <record id="mail_template_change_tracking_number" model="mail.template">
+            <field name="name">Change Tracking Number</field>
+            <field name="model_id" ref="asiup_shopbase_integration.model_sale_order"/>
+            <field name="subject">Your order ${object.name} has been change tracking!</field>
+            <field name="email_to">${object.partner_shipping_id.email_formatted | safe}</field>
+            <field name="email_from">${(object.company_id.email or user.email) | safe}</field>
+            <field name="body_html" type="html">
+                <div height="100%" align="center" width="100%" style="font-family:Helvetica Neue" color="#444444">
+                    <div style="padding: 15px 35px; width: 600px; font-size: 16px;">
+                        <div style="width: 100%; color: #444444;">
+                            <div class="tmp-header" style="padding: 15px 0px 15px; background-color: #467bb8; width: 100%;">
+                                <div style="display: table; width: 80%;">
+                                    <div style="display: table-cell; font-size: 20px; color: #ffffff; text-align:left;">
+                                        Happy Shop
+                                    </div>
+                                    <div style="display: table-cell; color: #ffffff; text-align: right;">
+                                        ${object.name}/Shipped!
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tmp-body" style="padding: 15px;  background-color: #ffffff;">
+                                <div>
+                                    <div style="text-align: center; padding: 15px 0px 0px; background-image: none; background-color: transparent;"
+                                         data-type="html/image" data-href="https://store.asiup.com/images/logo_email.png" data-alt="Happy Shop">
+                                        <img
+                                                style="max-width: 100%; width: 100px;" src="https://store.asiup.com/images/logo_email.png"/>
+                                        <p style="font-size:20px;">
+                                            <span>Order
+                                                <span>${object.name}</span>
+                                            </span>
+                                        </p>
+                                        <div style="text-align: left">
+                                            <p>
+                                                <span>Hi ${object.partner_shipping_id.first_name or 'our valued customer'},</span>
+                                            </p>
+                                            <p>Great news your order has been shipped! If your order contains multiple items, it might be shipped in
+                                                multiple shipments.
+                                            </p>
+                                            <em style="font-size: 15px;">Be patient it may take up to 1-3 days to update tracking information.
+                                            </em>
+                                        </div>
+                                        <br/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="width: 100%; line-height: 10px;">
+                                        <p style="text-align: left;font-family: 'Helvetica Neue'; font-size: 13px; padding-left: 25px">
+                                            <span style="color: #0000ff;">
+                                                <em style="background-color: #ffffff; ">Click on the image or product name below to visit the product
+                                                    page.
+                                                </em>
+                                            </span>
+                                        </p>
+                                        <br/>
+                                        % for line in object.order_line:
+                                        % if not line.is_extra_line:
+                                        <table style="border-collapse: collapse;">
+                                            <tbody>
+                                                <tr>
+                                                    % if line.product_id.ept_image_ids:
+                                                    % set product_image = line.product_id.ept_image_ids[0].url
+                                                    % endif
+                                                    <td style="width: 30%; padding: 0;">
+                                                        <a href="${line.product_url or '#'}">
+                                                            <img style="vertical-align: middle;"
+                                                                 src="${product_image}"
+                                                                 width="100%"/>
+                                                        </a>
+                                                    </td>
+                                                    <td style="padding: 0 15px;" valign="middle">
+                                                        <a href="${line.product_url or '#'}">
+                                                            <p style="font-size: 16px; font-weight: 400; color: #444444; line-height: 25px;">
+                                                                ${line.product_id.display_name}
+                                                            </p>
+                                                        </a>
+                                                        <p style="font-size: 14px; font-weight: 300; color: #444444;">Quantity:
+                                                            ${line.product_uom_qty}
+                                                        </p>
+                                                        <p style="font-size: 16px; color: #444444;">
+                                                            Tracking Number:
+                                                        </p>
+                                                        <a href="${line.sale_tracking_url or '#'}">
+                                                            ${line.tracking_number or '  '}
+                                                        </a>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <p style="white-space: nowrap; font-size: 20px; font-weight: 400; color: #444444; line-height: 30px;">
+                                                            <bdi>$ ${line.price_unit}</bdi>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        %endif
+                                        %endfor
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                                <div style="display: table; width: 100%;">
+                                    <div style="display: table-cell;   text-align: left; width: 50%">
+                                        <p>
+                                            <strong>Shipping Address</strong>
+                                        </p>
+                                        <div>
+                                            ${object.partner_shipping_id.name}
+                                            <br/>
+                                            ${object.partner_shipping_id.street or ''}, ${object.partner_shipping_id.street2 or ''}
+                                            <br/>
+                                            ${object.partner_shipping_id.city or ''}, ${object.partner_shipping_id.state_id.name or ''}
+                                            ${object.partner_shipping_id.zip or ''}
+                                            <br/>
+                                            ${object.partner_shipping_id.country_id.name or ''}
+                                            <br/>
+                                            ${object.partner_shipping_id.phone or ''}
+                                            <br/>
+                                            ${object.partner_shipping_id.email or ''}
+                                            <br/>
+                                        </div>
+                                    </div>
+                                    <div style="display: table-cell; width: 50%; ">
+                                        <div class="payment-detail" style="text-align: left;">
+                                            <p>
+                                                <strong>Payment Method: ${object.payment_gateway_id.name or ''}</strong>
+                                            </p>
+                                        </div>
+                                        <table width="100%">
+                                            <tr>
+                                                <td>Subtotal</td>
+                                                <td>
+                                                    $ ${"{:.2f}".format(object.total_line_items_price)}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Discount</td>
+                                                <td>
+                                                    $ ${"{:.2f}".format(object.total_discounts)}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Shipping</td>
+                                                <td>
+                                                    $ ${"{:.2f}".format(object.shipping_fee)}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Refund</td>
+                                                <td>
+                                                    $ ${"{:.2f}".format(object.refunded_amount)}
+                                                </td>
+                                            </tr>
+                                            <tr style="font-size: 20px;">
+                                                <td>
+                                                    Total
+                                                </td>
+                                                <td>
+                                                    $ ${"{:.2f}".format(object.net_amount_total)}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tmp-botton">
+                                <div>
+                                    <div style="background-color: #ffffff; border-color: #444444; width: 100%;">
+                                        <p style="font-size: 13px;">
+                                            <span style="color: #ff0000;">
+                                                <em>
+                                                    <span>
+                                                        <span style="color: #3366ff;">Please well note that this charge on your billing statement may
+                                                            be shown as
+                                                        </span>
+                                                        <strong>HAPPY SHOP (SOPCHOPPY, FL)</strong>
+                                                        <span
+                                                                style="color: #3366ff;">or
+                                                        </span>
+                                                        <strong>KANAWAS</strong>
+                                                        <span style="color: #3366ff;">or</span>
+                                                        <strong>COSMOR TUMBLR</strong>.
+                                                        <span
+                                                                style="color: #3366ff;">They are all our business names.
+                                                        </span>
+                                                    </span>
+                                                </em>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style="padding: 5px 0px 5px 0px; background-color: #467bb8; border-color: #444444; width: 100%;">
+                                    <span style="color: #f5f5f5; font-size: 20px;">Happy Shop</span>
+                                    <br/>
+                                    <span style="color: #f5f5f5; font-size: 12px;">For any questions please send an email to
+                                        support@buyercenter.help
+                                    </span>
+                                    <br/>
+                                    <a href="${object.woo_instance_id.woo_host}/privacy-policy/">
+                                        <span style="color: #f5f5f5; font-size: 12px;">Privacy Policy</span>
+                                    </a>
+                                    <span style="color: #f5f5f5; font-size: 12px;">|</span>
+                                    <a href="${object.woo_instance_id.woo_host}/contact/">
+                                        <span style="color: #f5f5f5; font-size: 12px;">Help Center</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

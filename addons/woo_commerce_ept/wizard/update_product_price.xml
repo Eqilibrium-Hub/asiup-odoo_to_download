@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_export_product_price_wizard" model="ir.ui.view">
+        <field name="name">Export Product price</field>
+        <field name="model">export.product.price.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Product price">
+                <sheet>
+                    <group>
+                        <field name="woo_store_ids" widget="many2many_tags" colspan="4"/>
+                        <field name="shopbase_store_ids" widget="many2many_tags" colspan="4"/>
+                    </group>
+                    <group>
+                         <group>
+                            <field name="lst_price"/>
+                        </group>
+                        <group>
+                            <field name="compare_price"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Update Price" name="update_variant_price_to_store" type="object"
+                                class="oe_highlight"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Action of Prepare Product Price For Export in Store of product template model -->
+    <record id="action_wizard_prepare_product_price_for_export" model="ir.actions.act_window">
+        <field name="name">Export Products Price</field>
+        <field name="res_model">export.product.price.wizard</field>
+        <field name="binding_model_id" ref="model_product_product"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="woo_commerce_ept.view_export_product_price_wizard"/>
+    </record>
+</odoo>

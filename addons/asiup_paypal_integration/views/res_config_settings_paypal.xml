@@ -1,0 +1,42 @@
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="25"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='recaptcha']" position="after">
+                    <div class="col-12 col-lg-6 o_setting_box" id="paypal_settings">
+                        <div class="o_setting_left_pane">
+                            <field name="paypal_live_mode"/>
+                        </div>
+                        <div class="o_setting_right_pane" id="paypal_settings_model">
+                            <label for="paypal_live_mode"/>
+                            <div class="text-muted">
+                                Use PayPal live
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="action_paypal_configuration" model="ir.actions.act_window">
+            <field name="name">Settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'asiup_paypal_integration'}</field>
+        </record>
+
+        <!--        <menuitem id="menu_paypal_config" name="Configuration"-->
+        <!--                  parent="asiup_paypal_integration.asiup_paypal_integration_menu"-->
+        <!--                  sequence="100" groups="base.group_no_one"/>-->
+
+        <!--        <menuitem id="menu_paypal_global_settings" name="Settings"-->
+        <!--                  parent="asiup_paypal_integration.menu_esign_config" sequence="0"-->
+        <!--                  action="asiup_paypal_integration.action_paypal_configuration"/>-->
+
+    </data>
+</odoo>

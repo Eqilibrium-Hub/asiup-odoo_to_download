@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="sms_template_for_order_web_creation" model="wk.sms.template">
+            <field name="name">SMS notification to customer when order placed</field>
+            <field name="condition">new_sale_order</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="sms_body_html"><![CDATA[
+              Your order #${object.name} is now Processing. If you need any support,
+              please contact us at support@buyercenter.help. We are happy to help!
+                            ]]>
+            </field>
+        </record>
+
+        <record id="sms_template_for_order_web_cancel" model="wk.sms.template">
+            <field name="name">SMS notification to customer when order Cancelled</field>
+            <field name="condition">order_cancel</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="sms_body_html"><![CDATA[
+              Hello ${object.partner_id.name},Your order ${object.name} has been cancelled from ${object.company_id.name}
+              ]]>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

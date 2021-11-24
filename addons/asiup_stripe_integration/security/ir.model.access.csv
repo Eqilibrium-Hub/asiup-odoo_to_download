@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stripe_account_group_user_all,stripe_account_group_user_all,model_stripe_account,,1,0,0,0
+access_stripe_account_group_system,stripe_account_group_system,model_stripe_account,base.group_system,1,1,1,1
+access_webhook_stripe_group_user_all,webhook_stripe_group_user_all,model_webhook_stripe,,1,0,0
+access_webhook_stripe_group_system,webhook_stripe_group_system,model_webhook_stripe,base.group_system,1,1,1,1

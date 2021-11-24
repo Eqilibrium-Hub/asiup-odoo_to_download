@@ -1,0 +1,33 @@
+<odoo>
+    <record id="sale.menu_sale_report" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+        <record id="export_xlsx_file_tree_view" model="ir.ui.view">
+        <field name="name">export.xlsx.file.store.tree</field>
+        <field name="model">export.xlsx.file.store</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="export_file"/>
+                <button name="get_file_export"   type="object" string="Download"
+                        class="oe_highlight" />
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="menu_exported_field_xlsx" model="ir.actions.act_window">
+        <field name="name">Export</field>
+        <field name="res_model">export.xlsx.file.store</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_sale_export_file"
+          name="Export"
+          parent="sale.sale_menu_root"
+          sequence="5"
+          action="menu_exported_field_xlsx"/>
+
+</odoo>

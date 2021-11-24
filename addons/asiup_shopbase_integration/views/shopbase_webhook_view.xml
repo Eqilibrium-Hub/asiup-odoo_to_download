@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="shopbase_webhook_tree_view" model="ir.ui.view">
+        <field name="name">shopbase.webhook.tree.view</field>
+        <field name="model">shopbase.webhook</field>
+        <field name="arch" type="xml">
+            <tree expand="1">
+                <field name="name"/>
+                <field name="shopbase_store_id"/>
+                <field name="webhook_id"/>
+                <field name="topic" decoration-success="1" widget="badge"/>
+                <field name="is_connect_shopbase" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="shopbase_webhook_form_view" model="ir.ui.view">
+        <field name="name">shopbase.webhook.form.view</field>
+        <field name="model">shopbase.webhook</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_webhook" type="object" string="Create Webhook" class="oe_highlight"
+                            attrs="{'invisible': [('is_connect_shopbase', '=', True)]}"/>
+                    <button name="action_delete_webhook" type="object" string="Delete Webhook" class="oe_highlight"
+                            attrs="{'invisible': [('is_connect_shopbase', '!=', True)]}"/>
+                </header>
+                <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="webhook_id"/>
+                        <field name="shopbase_store_id" options="{'no_create_edit': True, 'no_quick_create': True}"
+                               attrs="{'readonly': [('is_connect_shopbase', '=', True)]}"/>
+                        <field name="topic"/>
+                        <field name="is_connect_shopbase" widget="boolean_toggle"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="shopbase_webhook_search_view" model="ir.ui.view">
+        <field name="name">shopbase.webhook.view.search</field>
+        <field name="model">shopbase.webhook</field>
+        <field name="arch" type="xml">
+            <search string="Search Description">
+                <field name="name" />
+                <field name="shopbase_store_id" />
+                <separator/>
+                <filter string="Connected" name="filter_connected" domain="[('is_connect_shopbase','=',True)]"/>
+                <filter string="Not Connected" name="filter_connected" domain="[('is_connect_shopbase','!=',True)]"/>
+                <separator/>
+                <group expand="1" string="Group By">
+                    <filter string="Store" name='group_by_shopbase_store' context="{'group_by':'shopbase_store_id'}"/>
+                    <filter string="Topic" name='group_by_topic' context="{'group_by':'topic'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="shopbase_webhook_action" model="ir.actions.act_window">
+        <field name="name">Shopbase Webhook</field>
+        <field name="res_model">shopbase.webhook</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="context">{'search_default_group_by_shopbase_store':True}</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="shopbase_webhook_menu"
+              name="Shopbase Webhook"
+              parent="menu_shopbase_configuration"
+              action="shopbase_webhook_action"
+              sequence="30"/>
+</odoo>

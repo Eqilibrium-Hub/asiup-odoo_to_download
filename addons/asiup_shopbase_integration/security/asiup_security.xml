@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="0">
+    <record id="group_asiup_hidden" model="res.groups">
+        <field name="name">Show all features of Asiup</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</data>
+</odoo>
+

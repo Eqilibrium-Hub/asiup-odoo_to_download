@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="refund_request_tree_view" model="ir.ui.view">
+        <field name="name">refund.request.tree.view</field>
+        <field name="model">refund.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id" widget="open_tab" string=" "/>
+                <field name="sale_order_id"/>
+                <field name="payment_gateway_id"/>
+                <field name="amount_total"/>
+                <field name="refund_amount"/>
+                <field name="user_id"/>
+                <field name="request_date"/>
+                <field name="refund_reason"/>
+                <!--                <field name="shopbase_refund_id" attrs="{'column_invisible': [('state', '!=', 'done')]}"/>-->
+                <field name="state" decoration-success="state == 'approval'" decoration-muted="state == 'reject'"
+                       decoration-primary="state == 'approval'" decoration-info="state == 'confirm'" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="refund_request_form_view" model="ir.ui.view">
+        <field name="name">refund.request.form.view</field>
+        <field name="model">refund.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+<!--                    <button name="do_confirm" string="Confirm" type="object" class="oe_highlight"-->
+<!--                            attrs="{'invisible' : [('state', '!=', 'draft')]}"/>-->
+                    <button name="do_approval" string="Approval" type="object" class="oe_highlight"
+                            attrs="{'invisible' : ['|', ('state', '!=', 'confirm'), ('id', '=', False)]}"/>
+                    <button name="do_reject" string="Reject" type="object" class="oe_highlight"
+                            attrs="{'invisible' : ['|',('state', '!=', 'confirm'), ('id', '=', False)]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="confirm,approval,reject"/>
+                </header>
+                <sheet>
+                    <group name="refund_info">
+                        <group>
+                            <field name="sale_order_id"/>
+                            <field name="product_price"/>
+                            <field name="shipping_fee"/>
+                            <field name="total_amount"/>
+                            <field name="refunded_amount"/>
+                            <field name="amount_total"/>
+                            <field name="ticket_link" widget="url"/>
+
+                        </group>
+                        <group>
+                             <field name="type" widget="radio"/>
+                            <field name="refund_percent" attrs="{'readonly': [('state', 'in', ['reject', 'approval'])],'invisible': [('type','!=','percent')]}"/>
+                            <field name="refund_amount" force_save="1"
+                                   attrs="{'readonly': ['|', ('state', 'in', ['reject', 'approval']), ('type', '=', 'percent')],'required':[('type','=','amount')]}"/>
+                            <field name="user_id"/>
+                            <field name="request_date"/>
+                            <field name="refund_reason" attrs="{'readonly': [('state', 'in', ['reject', 'approval'])]}" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group name="shopbase_info" attrs="{'invisible': [('shopbase_order_id', '=', False)]}">
+                        <group>
+                            <field name="shopbase_order_number" string="SO number"/>
+                            <field name="shopbase_store_id"/>
+                            <field name="payment_gateway_id"/>
+                        </group>
+                        <group>
+                            <field name="shopbase_order_id" invisible="1"/>
+                            <field name="shopbase_refund_id"/>
+                            <field name="refund_shopbase_at"/>
+                        </group>
+                    </group>
+                    <!--                    <notebook>-->
+                    <!--                        <page string="Refund Lines" name="refund_lines">-->
+                    <!--                            <field name="refund_lines" nolabel="1" colspan="4">-->
+                    <!--                                <tree editable="bottom">-->
+                    <!--                                    <field name="sale_order_line_id"/>-->
+                    <!--                                    <field name="product_id"/>-->
+                    <!--                                    <field name="product_sku"/>-->
+                    <!--                                    <field name="product_uom_qty"/>-->
+                    <!--                                    <field name="refunded_qty"/>-->
+                    <!--                                    <field name="price_unit"/>-->
+                    <!--                                    <field name="refund_qty" required="1" widget="monetary"/>-->
+                    <!--                                    <field name="shopbase_refund_qty" attrs="{'column_invisible': [('parent.state', '!=', 'done')]}"/>-->
+                    <!--                                    <field name="is_shopbase_refund" widget="boolean_toggle"/>-->
+                    <!--                                    <field name="sale_order_id" invisible="1"/>-->
+                    <!--                                </tree>-->
+                    <!--                            </field>-->
+                    <!--                            <group name="note_group" col="6" class="mt-2 mt-md-0">-->
+                    <!--                                <group colspan="4">-->
+                    <!--                                    <field name="note" colspan="4" placeholder="Reason Note..." nolabel="1"/>-->
+                    <!--                                </group>-->
+                    <!--                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">-->
+                    <!--                                    <field name="refund_shipping" widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
+                    <!--                                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+                    <!--                                        <label for="refund_amount"/>-->
+                    <!--                                    </div>-->
+                    <!--                                    <field name="refund_amount" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
+                    <!--                                </group>-->
+                    <!--                                <div class="oe_clear"/>-->
+                    <!--                            </group>-->
+                    <!--                        </page>-->
+                    <!--                    </notebook>-->
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="refund_request_search_view" model="ir.ui.view">
+        <field name="name">refund.request.search</field>
+        <field name="model">refund.request</field>
+        <field name="arch" type="xml">
+            <search string="Search Description">
+                <field name="sale_order_id"/>
+                <field name="shopbase_order_number"/>
+                <field name="shopbase_store_id"/>
+                <separator/>
+                <filter string="Shopbase Refund" domain="[('shopbase_order_id', '!=', False)]"
+                        name="search_shopbase_refund"/>
+                <separator/>
+                <filter string="Need Approval" domain="[('state', '=', 'confirm')]" name="is_confirm"/>
+<!--                <filter string="Waitting Done" domain="[('state', '=', 'approval')]" name="is_approval"/>-->
+<!--                <filter string="Done" domain="[('state', '=', 'done')]" name="is_done"/>-->
+                <separator/>
+                <group expand="1" string="Group By">
+                    <filter string="Shopbase Store" name='groub_by_shopbase_store_id'
+                            context="{'group_by':'shopbase_store_id'}"/>
+                    <filter string="State" name='group_by_state' context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="refund_request_action" model="ir.actions.act_window">
+        <field name="name">Refund Resquest</field>
+        <field name="res_model">refund.request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="refund_request_menu"
+              name="Refund Resquest"
+              parent="menu_sale_process"
+              action="refund_request_action"
+              sequence="1"/>
+</odoo>

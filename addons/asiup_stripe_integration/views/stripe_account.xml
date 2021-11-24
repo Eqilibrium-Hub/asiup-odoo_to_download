@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="stripe_account_tree_view" model="ir.ui.view">
+        <field name="name">stripe.account.tree.view</field>
+        <field name="model">stripe.account</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="stripe_apikey"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="stripe_account_form_view" model="ir.ui.view">
+        <field name="name">stripe.account.form.view</field>
+        <field name="model">stripe.account</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Connected" attrs="{'invisible': [('active', '!=', True)]}"/>
+                    <group>
+                        <field name="name" required="1"/>
+                        <field name="email"/>
+                        <field name="stripe_apikey"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Webhooks" name="webhook">
+                            <field name="stripe_webhook_ids" nolabe="1">
+                                <tree editable="bottom" readonly="1">
+                                    <field name="event" readonly="1"/>
+                                    <field name="url" readonly="1"/>
+                                    <field name="status" readonly="1"/>
+                                    <field name="livemode" readonly="1" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="stripe_account_action" model="ir.actions.act_window">
+        <field name="name">Stripe Account</field>
+        <field name="res_model">stripe.account</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="stripe_account_menu"
+              name="Stripe Account"
+              parent="base.menu_users"
+              action="stripe_account_action"
+              sequence="110"/>
+</odoo>

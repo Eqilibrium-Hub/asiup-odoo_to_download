@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_asiup_purchase_asiup_purchase,asiup_purchase.asiup_purchase,model_purchase_quotation,base.group_user,1,1,1,1
+access_asiup_purchase_asiup_quotation,asiup_purchase_asiup_purchase,model_purchase_quotation,,1,0,0,0
+access_supplier_price_list_system, supplier_price_list_system,model_supplier_price_list,base.group_user,1,1,1,1
+access_supplier_price_list,supplier_price_list_list,model_supplier_price_list,,1,0,0,0
+access_quotation_message_wizard_system,quotation_message_wizard_system,model_quotation_message_wizard,base.group_user,1,1,1,1
+access_quotation_message_wizard,quotation_message_wizard,model_quotation_message_wizard,,1,0,0,0
+access_purchase_price_line,access_purchase_price_line,model_purchase_price_line,base.group_user,1,1,1,1
+access_product_sku,access_product_sku,model_product_sku,base.group_user,1,1,1,1

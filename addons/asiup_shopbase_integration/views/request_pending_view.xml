@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pending_request_tree_view" model="ir.ui.view">
+        <field name="name">pending.request.tree.view</field>
+        <field name="model">pending.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id" widget="open_tab" string=" "/>
+                <field name="sale_order_id"/>
+                <field name="date_order"/>
+                <field name="request_date"/>
+                <field name="user_id"/>
+                <field name="pending_reason" widget="many2many_tags"/>
+                <field name="state" decoration-success="state == 'resumed'" decoration-muted="state == 'reject'"
+                       decoration-primary="state == 'approval'"
+                       decoration-info="state == 'requested'" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="pending_request_form_view" model="ir.ui.view">
+        <field name="name">pending.request.form.view</field>
+        <field name="model">pending.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="do_approval" string="Approval" type="object" class="oe_highlight"
+                            attrs="{'invisible' : [('state', '!=', 'requested')]}"/>
+                    <button name="do_reject" string="Reject" type="object" class="oe_highlight"
+                            attrs="{'invisible' : [('state', '!=', 'requested')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="requested,approved,resumed,rejected"/>
+                </header>
+                <sheet>
+                    <group name="pending_info">
+                        <group>
+                            <field name="sale_order_id"/>
+                            <field name="order_status"/>
+                            <field name="date_order"/>
+                            <field name="paid_at"/>
+
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="request_date"/>
+                            <field name="pending_reason" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                     <button name="save_request" string="Save" type="object" attrs="{'invisible' : [('state', '!=', 'draft')]}"
+                                    class="oe_highlight"/>
+                </footer>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="pending_request_search_view" model="ir.ui.view">
+        <field name="name">pending.request.search</field>
+        <field name="model">pending.request</field>
+        <field name="arch" type="xml">
+            <search string="Search Description">
+                <field name="sale_order_id"/>
+                <separator/>
+                <filter string="Need Approval" domain="[('state', '=', 'requested')]" name="is_requested"/>
+                <separator/>
+                <group expand="1" string="Group By">
+                    <filter string="State" name='group_by_state' context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pending_request_action" model="ir.actions.act_window">
+        <field name="name">Pending Resquest</field>
+        <field name="res_model">pending.request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="pending_request_menu"
+              name="Pending Resquest"
+              parent="menu_sale_process"
+              action="pending_request_action"
+              sequence="2"/>
+</odoo>

@@ -1,0 +1,24 @@
+<odoo>
+    <data>
+        <record id="product_product_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.product.form.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='general_information']" position="after">
+                    <page name="quotation" string="Quotations" groups="product.group_product_variant">
+                        <field name="supplier_price_list" widget="one2many">
+                            <tree string="Supplier Price" editable="bottom">
+                                <field name="supplier" readonly="1"/>
+                                <field name="quotation_id" readonly="1"/>
+                                <field name="date_version" readonly="1"/>
+                                <field name="price" readonly="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

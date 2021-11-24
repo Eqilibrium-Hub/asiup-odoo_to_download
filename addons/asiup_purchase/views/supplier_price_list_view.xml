@@ -1,0 +1,42 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="asiup_purchase_price_list_id">
+            <field name="name">Supplier Price Listing</field>
+            <field name="model">supplier.price.list</field>
+            <field name="arch" type="xml">
+                <tree create="false" edit="false" delete="false">
+                    <field name="supplier"/>
+                    <field name="quotation_id"/>
+                    <field name="price"/>
+                    <field name="date_version"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="asiup_purchase_price_form_id">
+            <field name="name">Supplier Price Form</field>
+            <field name="model">supplier.price.list</field>
+            <field name="priority" eval="0"/>
+            <field name="arch" type="xml">
+                <form create="false" edit="false" delete="false">
+                    <header>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <separator string="Supplier"/>
+                                <field name="supplier" readonly="1"/>
+                                <field name="quotation_id" readonly="1"/>
+                                <field name="date_version" readonly="1"/>
+                            </group>
+                            <group>
+                                <separator string="Product"/>
+                                <field name="price" widget="monetary" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

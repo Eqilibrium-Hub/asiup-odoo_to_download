@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+        <record id="view_sales_order_tree_view_inherit" model="ir.ui.view">
+            <field name="name">sale.order.tree.view.inherit</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="asiup_shopbase_integration.view_order_line_tree_asiup"/>
+            <field name="arch" type="xml">
+                <xpath expr='//field[@name="price_subtotal"]' position='after'>
+                    <field name="supplier" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_sales_order_form_view_quotation_inherit" model="ir.ui.view">
+            <field name="name">sale.order.line.form.asiup</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="asiup_shopbase_integration.sale_order_line_view_form_asiup"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="qty_per_sku" invisible="1"/>
+                    <field name="supplier" domain="[('supplier_rank','=',1)]"/>
+                    <!--                    <field name="quotation_detail" domain="[('supplier','=',supplier),('set','=',qty_per_sku)]"/>-->
+                </xpath>
+            </field>
+        </record>
+
+        <record id="quotation_message_wizard" model="ir.ui.view">
+            <field name="name">Select Supplier</field>
+            <field name="model">quotation.message.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Message">
+                    <label string="Supplier" for="supplier"/>
+                    <field name="supplier" domain="[('supplier_rank','=',1)]"/>
+                    <footer>
+                        <button name="mapping_order_line_supplier" type="object" string="Select"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_select_supplier_asiup" model="ir.actions.server">
+            <field name="name">Select Supplier</field>
+            <field name="model_id" ref="model_sale_order_line"/>
+            <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order_line"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = model.select_supplier_wizard_form()
+            </field>
+        </record>
+
+        <record id="action_confirm_order_supplier" model="ir.actions.server">
+            <field name="name">Confirm Product Cost</field>
+            <field name="model_id" ref="model_sale_order_line"/>
+            <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order_line"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = model.confirm_supplier_product_cost()
+            </field>
+        </record>
+
+    </data>
+</odoo>

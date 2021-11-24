@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+        <record model="ir.ui.view" id="asiup_paypal_integration.list">
+            <field name="name">Paypal list</field>
+            <field name="model">asiup.paypal.integration</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="user_name"/>
+                    <field name="client_id"/>
+                    <field name="secret"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_id">
+            <field name="name">Paypal form</field>
+            <field name="model">asiup.paypal.integration</field>
+            <field name="priority" eval="0"/>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_test_connection" string="Test Connection" type="object" class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group colspan="2" col="2">
+                            <separator string="General" colspan="2"/>
+                            <field name="user_name"/>
+                            <field name="client_id"/>
+                            <field name="secret"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <field name="note" />
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+
+        <record model="ir.actions.act_window" id="asiup_paypal_integration_action_window">
+            <field name="name">Paypal</field>
+            <field name="res_model">asiup.paypal.integration</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    <menuitem id="asiup_paypal_integration_menu"
+              name="PayPal Account"
+              parent="base.menu_users"
+              action="asiup_paypal_integration_action_window"
+              sequence="120"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+<!--        <record model="ir.ui.view" id="asiup_purchase_pack_list_id">-->
+<!--            <field name="name">Set price List</field>-->
+<!--            <field name="model">purchase.pack.configs</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <tree editable="top">-->
+<!--                    <field name="name"/>-->
+<!--                    <field name="qty"/>-->
+<!--                </tree>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record model="ir.actions.act_window" id="asiup_purchase_pack_list_action">-->
+<!--            <field name="name">Supplier price Listing</field>-->
+<!--            <field name="res_model">purchase.pack.configs</field>-->
+<!--            <field name="view_mode">tree</field>-->
+<!--        </record>-->
+
+    </data>
+</odoo>

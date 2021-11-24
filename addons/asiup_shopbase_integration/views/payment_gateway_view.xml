@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+<!--    <record id="view_shopbase_payment_gateway_search" model="ir.ui.view">-->
+<!--        <field name="name">Shopbase Payment Gateway</field>-->
+<!--        <field name="model">woo.payment.gateway</field>-->
+<!--        <field name="type">search</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <search string="Shopbase Payment Gateway">-->
+<!--                <field name="name"/>-->
+<!--                <field name="code"/>-->
+<!--                <filter name="archive_payment_gateway" string="Archived" icon="terp-accessories-archiver"-->
+<!--                        domain="[('active','=',False)]"/>-->
+<!--                <filter name="dead_payment_gateway" string="Deaded" icon="terp-accessories-archiver"-->
+<!--                        domain="[('is_dead','=',True)]"/>-->
+<!--                <group expand="1" string="Group By">-->
+<!--                    <filter name="group_by_payment_code" string="Payment Code" context="{'group_by':'code'}"/>-->
+<!--                    <filter name="group_by_shopbase_store" string="Store" context="{'group_by':'shopbase_store_id'}"/>-->
+<!--                </group>-->
+<!--            </search>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="view_shopbase_payment_gateway_form" model="ir.ui.view">-->
+<!--        <field name="name">shopbase.payment.gateway.form</field>-->
+<!--        <field name="model">woo.payment.gateway</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form string="Shopbase Payment Gateway">-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <group>-->
+<!--                            <field name="code"/>-->
+<!--                            <field name="name"/>-->
+<!--                            <field name="shopbase_method_id" attrs="{'invisible': [('shopbase_method_id', '==', 'False')]}"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <field name="shopbase_store_id" domain="[('active','=',True)]"-->
+<!--                                   options="{'no_create_edit': True}"/>-->
+<!--                            <field name="active" widget="boolean_toggle"/>-->
+<!--                            <field name="is_dead" widget="boolean_toggle"/>-->
+
+<!--                        </group>-->
+<!--                    </group>-->
+<!--                </sheet>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="view_shopbase_payment_gateway_tree" model="ir.ui.view">-->
+<!--        <field name="name">shopbase.payment.gateway.tree</field>-->
+<!--        <field name="model">woo.payment.gateway</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <tree expand="1">-->
+<!--                <field name="name"/>-->
+<!--                <field name="code"/>-->
+<!--                <field name="shopbase_store_id"/>-->
+<!--                <field name="shopbase_method_id"/>-->
+<!--                <field name="active" widget="boolean_toggle"/>-->
+<!--                <field name="is_dead" widget="boolean_toggle"/>-->
+<!--            </tree>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="action_shopbase_payment_gateways"-->
+<!--            model="ir.actions.act_window">-->
+<!--        <field name="name">Payment Gateway</field>-->
+<!--        <field name="res_model">woo.payment.gateway</field>-->
+<!--        <field name="view_mode">tree,form</field>-->
+<!--        <field name="help" type="html">-->
+<!--            <div>-->
+<!--                <p class="o_view_nocontent_smiling_face">-->
+<!--                    <b>No Shopbase Payment Method Details are available right now.</b>-->
+<!--                </p>-->
+<!--            </div>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    &lt;!&ndash; action of payment gateway by instance wise of dashboard of more menu &ndash;&gt;-->
+<!--    <record id="action_shopbase_instance_payment_gateway_ept" model="ir.actions.act_window">-->
+<!--        <field name="name">Payment Gateway</field>-->
+<!--        <field name="res_model">woo.payment.gateway</field>-->
+<!--        <field name="type">ir.actions.act_window</field>-->
+<!--        <field name="view_mode">tree,form</field>-->
+<!--        <field name="domain">[('active', 'in', [True, False])]</field>-->
+<!--        <field name="context">{'search_default_group_by_shopbase_store':True}</field>-->
+<!--    </record>-->
+
+<!--    <menuitem id="shopbase_menu_item_payment_gateways" name="Payment Gateway"-->
+<!--              parent="menu_shopbase_configuration"-->
+<!--              action="action_shopbase_instance_payment_gateway_ept" sequence="50"/>-->
+
+</odoo>

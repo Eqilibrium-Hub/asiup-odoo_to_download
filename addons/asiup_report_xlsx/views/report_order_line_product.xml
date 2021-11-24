@@ -1,0 +1,49 @@
+<odoo>
+    <data>
+        <record id="asiup_report_order_product_wizard" model="ir.ui.view">
+            <field name="name">Report order product</field>
+            <field name="model">report.asiup_report_xlsx.report_order_line_product</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string=" Report">
+                    <field name="record_ids" invisible="1" focus_save="1"/>
+                    <h3>
+                        Export all Order Line being select
+                    </h3>
+                    <footer>
+                        <button name="get_report" string="Export" type="object" class="oe_highlight"/>
+                        <button name="export_order_line_change_ffmsent" string="Export and FFM send" type="object"
+                                class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="asiup_report_order_product_action" model="ir.actions.act_window">
+            <field name="name">Report Order Product</field>
+            <field name="res_model">report.asiup_report_xlsx.report_order_line_product</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{}</field>
+        </record>
+
+        <report id="report_order_product"
+                model="report.asiup_report_xlsx.report_order_line_product"
+                string="Report - xls"
+                report_type="xlsx"
+                name="asiup_report_xlsx.report_order_line_product"
+                file="Supplier"/>
+
+        <record id="action_generate_order_line_asiup" model="ir.actions.server">
+            <field name="name">Product to supplier</field>
+            <field name="model_id" ref="model_sale_order_line"/>
+            <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order_line"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = model.action_generate_order_line()
+            </field>
+        </record>
+
+    </data>
+</odoo>

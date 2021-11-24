@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="res_config_settings_view_form_inherit_sale_order" model="ir.ui.view">
+        <field name="name">res.config.settings.sale.order.view.form.</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="25"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='no_edit_order']" position="after">
+                <div class="col-12 col-lg-6 o_setting_box" id="amount_order_settings">
+                    <div class="o_setting_right_pane" id="amount_order_settings_model">
+                        <label for="max_amount"/>
+                        <div class="text-muted">
+                            Set max amount for order warning
+                            if not set to 0
+                        </div>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <field name="max_amount"/>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 o_setting_box" id="day_of_duplicate">
+                    <div class="o_setting_right_pane" id="day_of_duplicate">
+                        <label for="day_of_duplicate"/>
+                        <div class="text-muted">
+                            Set day of duplicate order
+                        </div>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <field name="day_of_duplicate"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_sale_order_asiup_configuration" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'asiup_paypal_integration'}</field>
+    </record>
+
+
+    <record id="view_shopbase_config_settings" model="ir.ui.view">
+        <field name="name">Shopbase Settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="100"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Shopbase" data-key="asiup_shopbase_integration">
+                    <!--                    <h2 style="font-size:25px;background-color:#e9ecef;">Tracking Package Setting</h2>-->
+                    <!--                    <div class="row mt16 o_settings_container" style="margin-left: 70px;">-->
+                    <!--                        <div class="o_setting_right_pane">-->
+                    <!--                            <label for="trackingmore_api_key" string="TrackingMore API Key"/>-->
+                    <!--                            <field name="trackingmore_api_key"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="row mt16 o_settings_container" style="margin-left: 70px;">-->
+                    <!--                        <div class="o_setting_right_pane">-->
+                    <!--                            <label for="url_trackingmore_register" string="Url Register TrackingMore"/>-->
+                    <!--                            <field name="url_trackingmore_register"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="row mt16 o_settings_container" style="margin-left: 70px;">-->
+                    <!--                        <div class="o_setting_right_pane">-->
+                    <!--                            <label for="api_key_17track" string="17Track API Key"/>-->
+                    <!--                            <field name="api_key_17track"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="row mt16 o_settings_container" style="margin-left: 70px;">-->
+                    <!--                        <div class="o_setting_right_pane">-->
+                    <!--                            <label for="url_17track_register" string="Url Register 17Track"/>-->
+                    <!--                            <field name="url_17track_register"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                </div>-->
+                    <div name="trackingmore_information_header">
+                        <h2 style="font-size:20px;background-color:#e9ecef;">Trackingmore Setting</h2>
+                    </div>
+
+                    <div>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="trackingmore_api_key" string="Trackingmore API Key"/>
+                                    <div class="text-muted">
+                                        Tracking more api key for tracking your order
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <field name="trackingmore_api_key" class="oe_inline"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="url_trackingmore_register" string="Trackingmore API Url"/>
+                                    <div class="text-muted">
+                                        Trackingmore api url for tracking your order
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <field name="url_trackingmore_register" class="oe_inline"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div name="trackingmore_information_header">
+                        <h2 style="font-size:20px;background-color:#e9ecef;">17Track Setting</h2>
+                    </div>
+
+                    <div>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="api_key_17track" string="17Track API Key"/>
+                                    <div class="text-muted">
+                                        17Track api key for tracking your order
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <field name="api_key_17track" class="oe_inline"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="url_17track_register" string="17Track API Url"/>
+                                    <div class="text-muted">
+                                        17Track api url for tracking your order
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <field name="url_17track_register" class="oe_inline"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_shopbase_config" model="ir.actions.act_window">
+        <field name="name">Shopify</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_shopbase_config_settings"/>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'asiup_shopbase_integration'}</field>
+    </record>
+    <menuitem id="menu_shopbase_config" name="Settings" parent="menu_shopbase_configuration" sequence="1"
+              action="action_shopbase_config"/>
+</odoo>

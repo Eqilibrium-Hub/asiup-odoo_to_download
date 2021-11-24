@@ -1,0 +1,993 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context">{}</field>
+    </record>
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="domain">[]</field>
+    </record>
+    <record id="view_order_tree_inherit_asiup" model="ir.ui.view">
+        <field name="name">sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-muted">order_status=='cancelled'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="id" widget="open_tab" string=" "/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="string">Order Number</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='date_order']" position="replace">
+                <field name="date_order" string="Create Date" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="paid_at" string="Paid Date" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_status']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_ids']" position="attributes">
+                <attribute name="optional">hide</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='team_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" decoration-success="state in ['sale', 'done']"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'cancel'" widget="badge" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="payment_gateway_id" string="Payment Method" optional="show"/>
+                <!--                new-->
+                <field name="order_status" optional="show"
+                       decoration-success="order_status in ['delivered']"
+                       decoration-danger="order_status in ['cancelled','failed', 'partially_cancelled']"
+                       decoration-info="order_status == 'processing'"
+                       widget="badge"/>
+                <field name="payment_status" optional="show"
+                       decoration-success="payment_status == 'paid'"
+                       decoration-warning="payment_status == 'pending'"
+                       decoration-danger="payment_status in ['partially_refunded', 'refunded']"
+                       widget="badge"/>
+                <field name="fulfillment_status" optional="show"
+                       decoration-warning="fulfillment_status in ['unexported']"
+                       decoration-danger="fulfillment_status in ['pending_export']"
+                       widget="badge"/>
+                <field name="delivery_status_general" widget="many2many_tags" options="{'color_field': 'color'}" optional="show"/>
+                <field name="tracking_number_general" class="tracking_number_general" optional="show"/>
+                <field name="pending_reason" widget="many2many_tags" optional="hide"/>
+                <field name="error_detail" decoration-danger="1" optional="hide"/>
+                <!--                <field name="total_line_items_price"/>-->
+                <!--                <field name="amount_total"/>-->
+            </xpath>
+        </field>
+    </record>
+    <record id="view_sales_order_auto_done_setting" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="ffm_status_before_pending" invisible="1"/>
+                <field name="is_reship_order" invisible="1"/>
+                <field name="request_reship_ids" invisible="1"/>
+                <field name="address_error" invisible="1"/>
+                <!--                <button name="processing_new_order_in_odoo_test" type="object" string="TEST"-->
+                <!--                        class="oe_highlight"/>-->
+                <button name="create_reship_request" type="object" string="Request Reship"
+                        class="oe_highlight" attrs="{'invisible': ['|',('order_status', '!=', 'processing'),('is_reship_order','!=',False)]}"/>
+                <button name="create_pending_request" type="object" string="Request Pending"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('fulfillment_status', '=', 'unexported'),
+                        ('order_status', '!=', 'processing'), ('last_pending_request_status', '=', 'requested')]}"/>
+                <button name="create_cancel_request" type="object" string="Request Cancel"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('fulfillment_status', '=', 'unexported'),
+                        ('order_status', '!=', 'processing'), ('last_cancel_request_status', '=', 'requested')]}"/>
+                <!--                <button name="action_fail_sale_order" type="object" string="Fail SO" class="oe_highlight"-->
+                <!--                        attrs="{'invisible': [('order_status','!=','cancelled')]}"/>-->
+                <button name="confirm_action_pending_so" type="object" string="Pending SO"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('fulfillment_status', '!=', 'unexported'),
+                        ('order_status', '!=', 'processing')]}"/>
+                <button name="confirm_action_cancel_so" type="object" string="Cancel SO"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('fulfillment_status', '!=', 'unexported'),
+                        ('order_status', '!=', 'processing')]}"/>
+                <button name="confirm_action_cancel_so" type="object" string="Cancel SO"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('fulfillment_status', '!=', 'pending_export'),
+                        ('order_status', '!=', 'pending')]}"/>
+                <button name="action_resume_sale_order" type="object" string="Resume SO"
+                        class="oe_highlight" attrs="{'invisible': [('order_status', 'not in', ['pending_payment','pending','on_hold'])]}"/>
+                <button name="action_confirm_shipping_address" type="object" string="Confirm Address" class="oe_highlight"
+                        attrs="{'invisible':[('address_error', '!=', True)]}"/>
+                <button name="action_send_mail_order_change_detail" type="object" string="Send Mail Changed Detail" class="oe_highlight"
+                        attrs="{'invisible':[('order_status', '!=', 'pending')]}"/>
+            </xpath>
+            <xpath expr="//form//sheet//button[@name='preview_sale_order']" position="replace">
+                <button name="action_view_order_web" type="object" class="oe_stat_button" icon="fa-globe icon"
+                        attrs="{'invisible': [('order_status_url', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Go to Store</span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" name="action_view_refund_request" type="object" icon="fa-paper-plane">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="refund_request_count"/>
+                        </span>
+                        <span class="o_stat_text">Refund</span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" name="action_view_reship_request" type="object" icon="fa-paper-plane">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="reship_request_count"/>
+                        </span>
+                        <span class="o_stat_text">Reship</span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" name="action_view_cancel_request" type="object" icon="fa-paper-plane">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="cancel_request_count"/>
+                        </span>
+                        <span class="o_stat_text">Cancel</span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" name="action_view_pending_request" type="object" icon="fa-paper-plane">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="pending_request_count"/>
+                        </span>
+                        <span class="o_stat_text">Pending</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//form/sheet/group[@name='sale_header']/group[@name='order_details']" position="replace">
+                <group name="order_details">
+                    <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
+                    <div class="o_td_label" invisible="1">
+                        <label for="date_order" string="Create Date"/>
+                    </div>
+                    <field name="date_order" nolabel="1" invisible="1"/>
+                    <!--                <div class="o_td_label" attrs="{'invisible': [('state', 'in', ['draft', 'sent'])]}">-->
+                    <!--                    <label for="date_order" string="Order Date"/>-->
+                    <!--                </div>-->
+                    <!--                <field name="date_order" attrs="{'required': [('state', 'in', ['sale', 'done'])], 'invisible': [('state', 'in', ['draft', 'sent'])]}" nolabel="1"/>-->
+                    <field name="show_update_pricelist" invisible="1"/>
+                    <label for="pricelist_id" groups="product.group_product_pricelist"/>
+                    <div groups="product.group_product_pricelist" class="o_row">
+                        <field name="pricelist_id" options="{'no_open':True,'no_create': True}"/>
+                        <button name="update_prices" type="object" string=" Update Prices" help="Recompute all prices based on this pricelist"
+                                class="btn-link mb-1 px-0" icon="fa-refresh"
+                                confirm="This will update all unit prices based on the currently set pricelist."
+                                attrs="{'invisible': ['|', ('show_update_pricelist', '=', False), ('state', 'in', ['sale', 'done','cancel'])]}"/>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="payment_term_id" options="{'no_open':True,'no_create': True}"/>
+                    <field name="problem_hide" invisible="1"/>
+                    <!--                    <field name="problem_product_hide" invisible="1"/>-->
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_draft']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[@name='sale_total']" position="replace">
+                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                    <field name="total_line_items_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="shipping_fee" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="total_discounts" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="refunded_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                        <label for="net_amount_total"/>
+                    </div>
+                    <field name="net_amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="context">{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True, 'show_email': True}</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page name="related_sale_order_ids" string="Related Sale Order">
+                    <field name="related_sale_order_ids" nolabel="1"/>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <span class="o_form_label o_td_label" name="customer_info">
+                    <b>Customer</b>
+                </span>
+                <div class="o_address_format">
+                    <field name="is_delivery_name_format" invisible="1"/>
+                    <field name="is_us_order" invisible="1"/>
+                    <field name="is_us_city" invisible="1"/>
+                    <field name="is_us_zip_code" invisible="1"/>
+                    <field name="is_us_state" invisible="1"/>
+                    <field name="is_delivery_street" invisible="1"/>
+                    <field name="partner_shipping_id" decoration-danger="is_delivery_name_format != True"/>
+                    <br/>
+                    <field name="email" placeholder="Email Buyer"/>
+                    <br/>
+                    <field name="phone" placeholder="Phone Buyer"/>
+                </div>
+                <span class="o_form_label o_td_label" name="address_info">
+                    <b>Shipping Address</b>
+                </span>
+                <div class="o_address_format">
+                    <field name="street" placeholder="Street..." class="o_address_street" decoration-danger="is_delivery_street != True"/>
+                    <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                    <field name="city" placeholder="City" class="o_address_city" decoration-danger="is_us_city != True"/>
+                    <br/>
+                    <field name="state_id" class="o_address_state" placeholder="State" decoration-danger="is_us_state != True"/>
+                    <br/>
+                    <field name="zip" placeholder="ZIP" class="o_address_zip" decoration-danger="is_us_zip_code != True"/>
+                    <br/>
+                    <field name="country_id" placeholder="Country" class="o_address_country" decoration-danger="is_us_order != True"/>
+                </div>
+                <field name="related_sale_order_ids_2" widget="many2many_tags"/>
+
+                <field name="pending_request_ids" invisible="1"
+                       attrs="{'invisible': [('pending_request_ids', '=', False)], 'readonly':[('order_status','!=','pending')]}"
+                       widget="many2many_tags"/>
+                <field name="last_pending_request_status"
+                       attrs="{'invisible': [('last_pending_request_status', '=', False)], 'readonly':[('order_status','!=','pending')]}"
+                       decoration-success="state == 'resumed'" decoration-muted="state == 'reject'"
+                       decoration-primary="state == 'approval'"
+                       decoration-info="state == 'requested'" widget="badge"/>
+                <field name="cancel_request_ids"
+                       attrs="{'invisible': [('cancel_request_ids', '=', False)], 'readonly':[('order_status','!=','pending')]}"
+                       widget="many2many_tags" invisible="1"/>
+                <field name="last_cancel_request_status"
+                       attrs="{'invisible': [('last_cancel_request_status', '=', False)], 'readonly':[('order_status','!=','pending')]}"
+                       decoration-success="state == 'cancelled'" decoration-muted="state == 'reject'"
+                       decoration-primary="state == 'approval'"
+                       decoration-info="state == 'requested'" widget="badge"/>
+                <!--                <field name="shipping_problem" widget="many2many_tags"/>-->
+                <!--                <field name="product_problem" widget="many2many_tags"/>-->
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[@name='note_group']" position="before">
+                <div class="oe_right">
+                    <field name="problem_hide" widget="boolean_toggle" string=" "/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_id']" position="after">
+                <field name="product_id"/>
+                <field name="product_url" widget="url" text="Link" string="URL" readonly="1"/>
+                <field name="product_name" invisible="1"/>
+                <field name="product_sku" readonly="1" invisible="1"/>
+                <field name="tracking_number" invisible="1" string="TKN"/>
+                <field name="sale_tracking_url" widget="url" text_field="tracking_number" string="TKN" readonly="1"/>
+                <field name="sol_fulfillment_status"
+                       decoration-warning="sol_fulfillment_status in ['unexported']"
+                       decoration-danger="sol_fulfillment_status =='pending_export'"
+                       widget="badge" string="FFM Status"/>
+                <field name="problem_shipping_ids" widget="many2many_tags" options="{'color_field': 'color'}"
+                       attrs="{'column_invisible': [('parent.problem_hide', '!=', True)]}"/>
+                <field name="problem_product_ids" widget="many2many_tags" options="{'color_field': 'color'}"
+                       attrs="{'column_invisible': [('parent.problem_hide', '!=', True)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="date_order" readonly="1" string="Create Date"/>
+                <field name="paid_at" readonly="1"/>
+                <field name="payment_gateway_id" string="Payment Method"/>
+                <field name="request_reship_ids" invisible="1"/>
+                <field name="order_status"
+                       decoration-success="order_status in ['delivered']"
+                       decoration-danger="order_status in ['cancelled','failed', 'partially_cancelled']"
+                       decoration-info="order_status == 'processing'"
+                       widget="badge"/>
+                <field name="payment_status"
+                       decoration-success="payment_status == 'paid'"
+                       decoration-warning="payment_status == 'pending'"
+                       decoration-danger="payment_status in ['partially_refunded', 'refunded']"
+                       widget="badge"/>
+                <field name="fulfillment_status"
+                       decoration-warning="fulfillment_status in ['unexported']"
+                       decoration-danger="fulfillment_status in ['pending_export']"
+                       widget="badge"/>
+                <field name="old_order" attrs="{'invisible': [('old_order', '=', False)]}"/>
+                <field name="order_status_url" invisible="1"/>
+                <field name="pending_reason" widget="many2many_tags" attrs="{'readonly':[('order_status','!=','pending')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree" position="attributes">
+                <attribute name="decoration-muted">is_extra_line==True or sol_status=='cancelled'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page/field[@name='order_line']/tree/widget[@name='qty_at_date_widget']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                <attribute name="create">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='price_subtotal']" position="attributes">
+                <attribute name="readonly">0</attribute>
+                <attribute name="width">1px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom_qty']" position="attributes">
+                <attribute name="readonly">0</attribute>
+                <attribute name="string">Qty</attribute>
+                <attribute name="width">1px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='qty_delivered']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='qty_invoiced']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='sequence']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!--            <xpath expr="//field[@name='order_line']//tree//field[@name='sale_tracking_url']" position="attributes">-->
+            <!--                <attribute name="readonly">1</attribute>-->
+            <!--            </xpath>-->
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">0</attribute>
+                <attribute name="string">Price</attribute>
+                <attribute name="width">1px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='price_subtotal']" position="after">
+                <field name="total_discount" invisible="1"/>
+                <field name="sol_status" invisible="1"/>
+                <field name="is_extra_line" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="replace">
+                <field name="ticket_link" widget="url"/>
+                <field name="note" placeholder="Note" string="Note:"/>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='customer_signature']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page string="Shopbase info" name="shopbase_information"
+                      attrs="{'invisible': [('shopbase_order_id', '=', False)]}">
+                    <group>
+                        <group>
+                            <field name="shopbase_order_id"/>
+                            <field name="shopbase_order_number" string="SO Number"/>
+                            <field name="shopbase_store_id"/>
+                        </group>
+                        <group>
+                            <field name="payment_gateway_id"/>
+                            <field name="transaction_authorization" invisible="1"/>
+                            <field name="transaction_authorization_url" widget="url" text_field="transaction_authorization"/>
+                            <field name="shopbase_fulfillment_status"
+                                   decoration-success="shopbase_fulfillment_status == 'fulfilled'"
+                                   decoration-info="shopbase_fulfillment_status in ['unfulfilled', 'partially_fulfilled',
+                                   'processing', 'partially_processing']" widget="badge"/>
+                            <field name="payment_status" widget="badge" decoration-success="payment_status == 'paid'"
+                                   decoration-muted="payment_status == 'voided'"
+                                   decoration-info="payment_status in ['pending', 'authorized', 'refunded',
+                                   'partially_refunded', 'payment_in_process']"/>
+                            <field name="cancel_at" attrs="{'invisible': [('payment_status', '!=', 'voided')]}"/>
+                            <field name="cancel_reason" attrs="{'invisible': [('payment_status', '!=', 'voided')]}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="delivery.view_order_form_with_carrier" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="sale.sale_order_view_search_inherit_sale" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.sale</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="name" string="Order" filter_domain="['|', '|', '|', '|', '|', ('name', 'ilike', self),
+                    ('client_order_ref', 'ilike', self), ('partner_id', 'child_of', self),
+                    ('transaction_authorization', '=', self), ('partner_id.phone', 'ilike', self), ('order_line.tracking_number', 'ilike', self)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="replace">
+                <filter string="Today" name="today_filter" domain="[('date_order', '&gt;=', (datetime.datetime.now() + relativedelta(days=-2)).strftime('%Y-%m-%d 17:00:00')),
+                ('date_order', '&lt;=', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--    <record id="sale_order_view_search_inherit_asiup" model="ir.ui.view">-->
+    <!--            <field name="name">sale.order.search.inherit.asiup</field>-->
+    <!--            <field name="model">sale.order</field>-->
+    <!--            <field name="mode">primary</field>-->
+    <!--            <field name="inherit_id" ref="sale.view_sales_order_filter"/>-->
+    <!--            <field name="arch" type="xml">-->
+    <!--                <xpath expr="//field[@name='name']" position="replace">-->
+    <!--                    <field name="name" string="Order" filter_domain="['|', '|', '|', '|', '|', ('name', 'ilike', self),-->
+    <!--                    ('client_order_ref', 'ilike', self), ('partner_id', 'child_of', self),-->
+    <!--                    ('transaction_authorization', '=', self), ('partner_id.phone', 'ilike', self), ('order_line.tracking_number', 'ilike', self)]"/>-->
+    <!--                </xpath>-->
+    <!--            </field>-->
+    <!--        </record>-->
+
+    <record id="sale_management.sale_order_form_quote" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+
+    <record id="view_order_line_tree_asiup" model="ir.ui.view">
+        <field name="name">sale.order.line.tree</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <tree string="Sales Order Lines" import="1" create="false"
+                  decoration-muted="sol_status in ['cancelled', 'failed']">
+                <field name="id" widget="open_tab" string=" "/>
+                <field name="order_id"/>
+                <field name="date_order" string="Create Date" optional="show"/>
+                <field name="paid_at" string="Paid Date" optional="show"/>
+                <field name="ffm_date" optional="hide"/>
+                <field name="latency_paid_date" optional="hide"/>
+                <field name="latency_ffm_date" optional="hide"/>
+                <field name="order_partner_id" optional="hide"/>
+                <field name="product_id" optional="hide"/>
+                <field name="product_url" widget="url" text="Link" optional="hide"/>
+                <field name="product_label" optional="show" string="Label"/>
+                <field name="product_sku" optional="show"/>
+                <field name="attribute_variant_lst" optional="hide" string="Attributes"/>
+                <field name="is_product_set" widget="boolean_toggle" invisible="1"/>
+                <field name="shopbase_store_id" optional="hide"/>
+                <field name="product_uom_qty" string="Qty"/>
+                <!--                <field name="refund_qty"/>-->
+                <field name="price_unit" optional="hide"/>
+                <field name="product_cost" optional="hide"/>
+                <!--                <field name="total_discount"/>-->
+                <field name="price_subtotal" sum="Total" widget="monetary" invisible="1"/>
+                <field name="currency_id" optional="hide"/>
+                <!--                <field name="payment_status" optional="hide"/>-->
+                <!--                <field name="shopbase_order_id" string="Shopbase ID"/>-->
+                <field name="tracking_number" optional="show"/>
+                <field name="sol_status"
+                       decoration-success="sol_status in ['delivered']"
+                       decoration-danger="sol_status in ['cancelled','failed']"
+                       decoration-info="sol_status == 'processing'" widget="badge" optional="show"/>
+                <field name="sol_payment_status"
+                       decoration-success="sol_payment_status == 'paid'"
+                       decoration-warning="sol_payment_status == 'pending'"
+                       decoration-danger="sol_payment_status == 'refunded'" widget="badge" optional="show"/>
+                <field name="sol_fulfillment_status"
+                       decoration-warning="sol_fulfillment_status in ['unexported']"
+                       decoration-danger="sol_fulfillment_status =='pending_export'"
+                       widget="badge" optional="show"/>
+                <field name="sol_delivery_status"
+                       decoration-success="sol_delivery_status in ['delivered']"
+                       decoration-info="sol_delivery_status in ['transit','notfound','exception']"
+                       widget="badge" optional="show"/>
+
+                <field name="tkm_ffm_status"
+                       decoration-success="tkm_ffm_status == 'delivered'"
+                       decoration-danger="tkm_ffm_status in ['notfound', 'expired', 'exception']"
+                       decoration-muted="tkm_ffm_status == 'undelivered'"
+                       decoration-info="tkm_ffm_status in ['pending', 'transit', 'pickup']" widget="badge" optional="hide"/>
+                <field name="track17_ffm_status"
+                       decoration-success="track17_ffm_status == 'delivered'"
+                       decoration-danger="track17_ffm_status in ['notfound', 'expired', 'exception']"
+                       decoration-muted="track17_ffm_status == 'undelivered'"
+                       decoration-info="track17_ffm_status in ['pending', 'transit', 'pickup']" widget="badge" optional="hide"/>
+                <field name="quote_status" widget="badge" optional="hide"/>
+                <field name="pending_reason" widget="many2many_tags" optional="show"/>
+                <field name="address_error" widget="boolean_toggle" readonly="1" invisible="1"/>
+                <field name="error_detail" decoration-danger="1" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_order_line_view_form_asiup" model="ir.ui.view">
+        <field name="name">sale.order.line.form.asiup</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <form string="Sales Order Item">
+                <header>
+                    <field name="address_error" invisible="1"/>
+                    <!--                    <button name="send_main_sol_success" type="object" string="Send Mail Success" class="oe_highlight"/>-->
+                    <button name="action_cancel_order_line" type="object"
+                            string="Cancel" class="oe_highlight" attrs="{'invisible':[('sol_status', '=', 'cancelled')]}"
+                    />
+                    <button name="action_processing_sale_order_line" type="object" string="Processing SOL" class="oe_highlight"
+                            attrs="{'invisible':['|',('sol_status','!=','pending'),('sol_fulfillment_status','!=','pending_export')]}"/>
+                    <button name="action_fail_order_line" type="object" string="Failed SOL" class="oe_highlight"
+                            attrs="{'invisible':['|',('sol_status','!=','cancelled'),('sol_fulfillment_status','!=','pending_export')]}"/>
+                    <button name="action_confirm_shipping_address" type="object" string="Confirm Address" class="oe_highlight"
+                            attrs="{'invisible':[('address_error', '!=', True)]}"/>
+                    <field name="is_us_city" invisible="1" force_save="1"/>
+                    <field name="is_us_state" invisible="1" force_save="1"/>
+                    <field name="is_us_zip_code" invisible="1" force_save="1"/>
+                    <field name="is_us_order" invisible="1" force_save="1"/>
+                    <field name="is_delivery_name_format" invisible="1" force_save="1"/>
+                    <field name="is_delivery_street" invisible="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <h2>
+                        <field name="display_name" readonly="1"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="order_id" readonly="1"/>
+                            <field name="product_id" readonly="1"/>
+                            <field name="date_order"/>
+                            <field name="paid_at"/>
+                            <field name="ffm_date"/>
+                            <field name="processing_time"/>
+                            <field name="product_sku"/>
+                            <!--                            <field name="name" readonly="1"/>-->
+                            <field name="partner_invoice_id" readonly="1" invisible="1"/>
+                            <span class="o_form_label o_td_label" name="address_name">
+                                <b>Delivery Address</b>
+                            </span>
+                            <div class="o_address_format">
+                                <field name="partner_shipping_id"/>
+                                <br/>
+                                <field name="email" placeholder="Email Buyer"/>
+                                <br/>
+                                <field name="phone" placeholder="Phone Buyer"/>
+                                <br/>
+                                <field name="delivery_name" placeholder="Buyer" class="o_buyer" style="color:red"
+                                       attrs="{'invisible':[('is_delivery_name_format','=', True)]}"/>
+                                <field name="delivery_name" placeholder="Buyer" class="o_buyer"
+                                       attrs="{'invisible':[('is_delivery_name_format','=', False)]}"/>
+                                <field name="street" placeholder="Street..." class="o_address_street" decoration-danger="is_delivery_street != True"/>
+                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="city" placeholder="City" class="o_address_city" style="color:red"
+                                       attrs="{'invisible':[('is_us_city','=', True)]}"/>
+                                <field name="city" placeholder="City" class="o_address_city"
+                                       attrs="{'invisible':[('is_us_city','=', False)]}"/>
+                                <field name="state_id" class="o_address_state" placeholder="State" style="color:red"
+                                       attrs="{'invisible':[('is_us_state','=', True)]}"/>
+                                <field name="state_id" class="o_address_state" placeholder="State"
+                                       attrs="{'invisible':[('is_us_state','=', False)]}"/>
+                                <field name="zip" placeholder="ZIP" class="o_address_zip" style="color:red"
+                                       attrs="{'invisible':[('is_us_zip_code','=', True)]}"/>
+                                <field name="zip" placeholder="ZIP" class="o_address_zip"
+                                       attrs="{'invisible':[('is_us_zip_code','=', False)]}"/>
+                                <field name="country_id" placeholder="Country" class="o_address_country"
+                                       style="color:red" attrs="{'invisible':[('is_us_order','=', True)]}"/>
+                                <field name="country_id" placeholder="Country" class="o_address_country"
+                                       attrs="{'invisible':[('is_us_order','=', False)]}"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="product_uom_qty" readonly="1"/>
+                            <!--                            <field name="qty_delivered" readonly="1"/>-->
+                            <!--                            <field name="qty_invoiced"/>-->
+                            <!--                            <field name="refund_qty"/>-->
+                            <field name="price_unit" readonly="1"/>
+                            <field name="latency_paid_date"/>
+                            <field name="latency_ffm_date"/>
+                            <field name="total_discount" readonly="1"/>
+                            <field name="price_subtotal" widget="monetary"/>
+                            <!--                            <field name="price_tax" widget="monetary"/>-->
+                            <field name="price_total" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="state" invisible="1"/>
+                            <field name="sol_status"
+                                   decoration-success="sol_status in ['delivered']"
+                                   decoration-danger="sol_status in ['cancelled','failed']"
+                                   decoration-info="sol_status == 'processing'" widget="badge"/>
+                            <field name="sol_payment_status"
+                                   decoration-success="sol_payment_status == 'paid'"
+                                   decoration-warning="sol_payment_status == 'pending'"
+                                   decoration-danger="sol_payment_status == 'refunded'" widget="badge"/>
+                            <field name="sol_fulfillment_status"
+                                   decoration-warning="sol_fulfillment_status in ['unexported']"
+                                   decoration-danger="sol_fulfillment_status =='pending_export'"
+                                   widget="badge"/>
+                            <field name="sol_delivery_status"
+                                   decoration-success="sol_delivery_status in ['delivered']"
+                                   decoration-info="sol_delivery_status in ['transit','notfound','exception']"
+                                   widget="badge"/>
+                            <field name="pending_reason" widget="many2many_tags"/>
+                            <field name="claim_reason" widget="many2many_tags"/>
+                            <field name="note_ffm"/>
+                            <field name="note_cs"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Delivery Status" name="delivery_status">
+                            <group name="tracking_number">
+                                <group>
+                                    <field name="tracking_number"/>
+                                    <field name="carrier_id" readonly="1"/>
+                                    <field name="trackingmore_registed" string="TKM register"
+                                           attrs="{'invisible': [('tracking_number', '=', False)]}"
+                                           widget="boolean_toggle"/>
+                                    <field name="tkm_ffm_status"
+                                           decoration-success="tkm_ffm_status == 'delivered'"
+                                           decoration-danger="tkm_ffm_status in ['notfound', 'expired', 'exception']"
+                                           decoration-muted="tkm_ffm_status == 'undelivered'"
+                                           decoration-info="tkm_ffm_status in ['pending', 'transit', 'pickup']"
+                                           widget="badge"
+                                           attrs="{'invisible': [('trackingmore_registed', '=', False)]}"/>
+                                </group>
+                                <group>
+                                    <field name="carrier_code" invisible="1"/>
+                                    <field name="carrier_key" invisible="1"/>
+                                    <field name="register_17track" readonly="1"
+                                           attrs="{'invisible': [('tracking_number', '=', False)]}"
+                                           widget="boolean_toggle"/>
+                                    <field name="track17_ffm_status"
+                                           decoration-success="track17_ffm_status == 'delivered'"
+                                           decoration-danger="track17_ffm_status in ['notfound', 'expired', 'exception']"
+                                           decoration-muted="track17_ffm_status == 'undelivered'"
+                                           decoration-info="track17_ffm_status in ['pending', 'transit', 'pickup']"
+                                           widget="badge"
+                                           attrs="{'invisible': [('register_17track', '=', False)]}"/>
+                                </group>
+                            </group>
+                            <group name="shopbase_register" col="4"
+                                   attrs="{'invisible': ['|', ('shopbase_order_id', '=', False), ('tracking_number', '=', False)]}">
+                                <field name="shopbase_fulfilled" widget="boolean_toggle"/>
+                                <field name="shopbase_fulfill_id"/>
+                            </group>
+                            <label for="tracking_info_ids" string="Tracking Information" style="font-size: 20px;"
+                                   attrs="{'invisible': [('trackingmore_registed', '=', False),('register_17track','=',False)]}"/>
+                            <group colspan="4"
+                                   attrs="{'invisible': [('trackingmore_registed', '=', False),('register_17track','=',False)]}">
+                                <field name="tracking_info_ids" nolabel="1" readonly="1">
+                                    <tree editable="bottom">
+                                        <field name="info_type"/>
+                                        <field name="date"/>
+                                        <field name="location"/>
+                                        <field name="detail_summary"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                        <page name="shopbase_information" string="Shopbase Information"
+                              attrs="{'invisible': [('shopbase_order_id', '=', False)]}">
+                            <group>
+                                <group>
+                                    <field name="shopbase_store_id"/>
+                                    <field name="shopbase_line_id"/>
+                                </group>
+                                <group>
+                                    <field name="shopbase_order_id"/>
+                                    <field name="shopbase_order_number" string="Shopbase Number"/>
+                                    <!--                                    <field name="shopbase_fulfilled"/>-->
+                                    <!--                                    <field name="shopbase_fulfill_id"/>-->
+                                </group>
+                            </group>
+                        </page>
+                        <page name="other_information" string="Other Information">
+                            <group>
+                                <group>
+                                    <field name="order_partner_id"/>
+                                </group>
+                                <group>
+                                    <field name="company_id" options="{'no_create': True}"
+                                           groups="base.group_multi_company"
+                                           invisible="1"/>
+
+                                </group>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sales_order_line_filter_inherit" model="ir.ui.view">
+        <field name="name">sale.order.line.select</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_sales_order_line_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='order_id']" position="before">
+                <field name="name" string="Order" filter_domain="['|', '|', '|', '|', '|','|', ('order_id', 'ilike', self),
+                    ('partner_shipping_id.email','ilike',self),('order_id.payment_gateway_id.name','ilike',self),
+                    ('partner_shipping_id.phone', 'ilike', self), ('tracking_number', 'ilike', self),
+                    ('product_label','ilike',self),('attribute_variant_lst','ilike',self)]"/>
+            </xpath>
+            <xpath expr="//field[@name='order_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//filter[@name='my_sales_order_lines']" position="before">
+                <!--                <filter string="Shopbase Order" name="order_shopbase" domain="[('shopbase_store_id', '!=', False)]"/>-->
+                <group expand="0" string="Group By">
+                    <filter string="Shopbase Order" name="order_shopbase_id"
+                            context="{'group_by':'shopbase_store_id'}"/>
+                </group>
+                <separator/>
+                <filter name="6_hours_ago" string="6 hours ago"
+                        domain="[('date_order', '&gt;=',(datetime.datetime.now() + relativedelta(hours=-28)).strftime('%Y-%m-%d %H:00:00'))]"/>
+                <filter string="Today" name="today_filter_line" domain="[('date_order', '&gt;=', (datetime.datetime.now() + relativedelta(days=-2)).strftime('%Y-%m-%d 17:00:00')),
+                ('date_order', '&lt;=', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <!--                <filter string="Current Week" name="week"-->
+                <!--                        domain="[('date_order','&lt;=', (context_today() + relativedelta(weeks=0,day=7, weekday=-1)).strftime('%Y-%m-%d')),-->
+                <!--                        ('date_order','&gt;=',(context_today() - relativedelta(weeks=1, weekday=0)).strftime('%Y-%m-%d'))]"/>-->
+                <!--                <filter string="Last week" name="last_week"-->
+                <!--                        domain="[('date_order', '&gt;=', ((context_today()+relativedelta(weeks=-2, days=1, weekday=0, hours=7)).strftime('%Y-%m-%d'))),-->
+                <!--                        ('date_order', '&lt;=', ((context_today()+relativedelta(weeks=-1,weekday=6,hours=7)).strftime('%Y-%m-%d')))]"/>-->
+                <!--                <filter name="month" string="This Month"-->
+                <!--                        domain="['&amp;',('date_order','&gt;=',(context_today()+relativedelta(day=1)).strftime('%Y-%m-%d')),-->
+                <!--                        ('date_order','&lt;=',(context_today()+relativedelta(months=1,day=1,days=-1)).strftime('%Y-%m-%d'))]"/>-->
+                <!--                <filter name="prev_month" string="Last Month"-->
+                <!--                        domain="[('date_order','&gt;=',(context_today()-relativedelta(months=1)).strftime('%Y-%m-01')),-->
+                <!--                        ('date_order','&lt;',context_today().strftime('%Y-%m-01'))]"/>-->
+                <separator/>
+                <filter string="Order Date" name="order_year" date="date_order"/>
+
+                <separator/>
+                <filter name="address_error" string="Address Error" domain="[('address_error', '=', True)]"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//field[@name='order_partner_id']" position="after">
+                <separator/>
+                <field name="tracking_info_ids" string="Tracking detail"
+                       filter_domain="[('tracking_info_ids.detail_summary','ilike',self)]"/>
+                <separator/>
+                <!--                <field string="Latency ffm date" name="latency_ffm_date" filter_domain="[('latency_ffm_date','ilike',self)]"/>-->
+                <!--                <field string="Latency paid date" name="latency_paid_date" filter_domain="[('latency_paid_date','ilike',self)]"/>-->
+                <field string="Latency ffm date less than or equal to" name="latency_ffm_date_num"
+                       filter_domain="[('latency_ffm_date_num','&lt;=',self)]"/>
+                <field string="Latency paid date less than or equal to" name="latency_paid_date_num"
+                       filter_domain="[('latency_paid_date_num','&lt;=',self)]"/>
+                <field string="Latency ffm date greater than " name="latency_ffm_date_num" filter_domain="[('latency_ffm_date_num','&gt;',self)]"/>
+                <field string="Latency paid date greater than " name="latency_paid_date_num" filter_domain="[('latency_paid_date_num','&gt;',self)]"/>
+                <field name="tracking_number"/>
+                <field name="sol_fulfillment_status"/>
+                <!--                <field name="shopbase_store_id"/>-->
+                <!--                <field name="shopbase_order_number"/>-->
+                <field name="product_sku" string="Set"/>
+            </xpath>
+            <xpath expr="//filter[@name='my_sales_order_lines']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='to_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='salesperson']" position="after">
+                <separator/>
+                <filter string="Shopbase Store" name="shopbase_store_id" domain="[]"
+                        context="{'group_by':'shopbase_store_id'}"/>
+                <!--                <filter string="Create Date" name="order_date" domain="[]" context="{'group_by': 'date_order'}"/>-->
+            </xpath>
+        </field>
+    </record>
+
+    <!--    <record id="view_sale_order_search_inherit_shopbase" model="ir.ui.view">-->
+    <!--        <field name="name">view.sale.order.search.inherit.shopbase</field>-->
+    <!--        <field name="model">sale.order</field>-->
+    <!--        <field name="inherit_id" ref="sale.view_sales_order_filter"/>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            <xpath expr="//field[@name='name']" position="before">-->
+    <!--                <filter string="Shopbase Order" name="order_shopbase" domain="[('shopbase_store_id', '!=', False)]"/>-->
+    <!--                <group expand="0" string="Group By">-->
+    <!--                    <filter string="Shopbase Order" name="order_shopbase_id"-->
+    <!--                            context="{'group_by':'shopbase_store_id'}"/>-->
+    <!--                </group>-->
+    <!--            </xpath>-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+    <record model="ir.ui.view" id="view_sale_order_line_graph">
+        <field name="name">sale.order.line.graph</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <graph string="Sales Orders" sample="1">
+                <field name="shopbase_store_id"/>
+                <field name="product_uom_qty" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sale_order_line_pivot">
+        <field name="name">sale.order.line.pivot</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Sales Orders" sample="1">
+                <field name="date_order" type="row"/>
+                <field name="product_uom_qty" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_tracking_info_line" model="ir.ui.view">
+        <field name="name">tracking.info.form</field>
+        <field name="model">tracking.info</field>
+        <field name="arch" type="xml">
+            <form readonly="1">
+                <group>
+                    <group>
+                        <field name="sale_order_line_id"/>
+                        <field name="info_type"/>
+                        <field name="location"/>
+                        <field name="detail"/>
+                    </group>
+                    <group>
+                        <field name="date"/>
+                        <field name="checkpoint_delivery_status"/>
+                        <field name="checkpoint_delivery_substatus"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!--    <record id="action_update_tracking_order_line_17track" model="ir.actions.server">-->
+    <!--        <field name="name">Register to 17Track</field>-->
+    <!--        <field name="model_id" ref="model_sale_order_line"/>-->
+    <!--        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order_line"/>-->
+    <!--        <field name="binding_view_types">list</field>-->
+    <!--        <field name="state">code</field>-->
+    <!--        <field name="code">-->
+    <!--            action = model.action_package_register_17track()-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+    <record id="action_update_tracking_order_line_tracking_more" model="ir.actions.server">
+        <field name="name">Register to TrackingMore</field>
+        <field name="model_id" ref="model_sale_order_line"/>
+        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_package_register_tracking_more()
+        </field>
+    </record>
+
+    <record id="action_sale_order_line" model="ir.actions.act_window">
+        <field name="name">Sales Order Lines</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_extra_line', '=', False)]</field>
+    </record>
+
+    <record id="action_sale_order_line_tree_view" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_order_line_tree_asiup"/>
+        <field name="act_window_id" ref="action_sale_order_line"/>
+    </record>
+    <record id="action_sale_order_line_form_view" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="sale_order_line_view_form_asiup"/>
+        <field name="act_window_id" ref="action_sale_order_line"/>
+    </record>
+
+    <record id="action_sale_order_line_graph_view" model="ir.actions.act_window.view">
+        <field eval="3" name="sequence"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_sale_order_line_graph"/>
+        <field name="act_window_id" ref="action_sale_order_line"/>
+    </record>
+    <record id="action_sale_order_line_pivot_view" model="ir.actions.act_window.view">
+        <field eval="4" name="sequence"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_sale_order_line_pivot"/>
+        <field name="act_window_id" ref="action_sale_order_line"/>
+    </record>
+
+    <menuitem action="action_sale_order_line"
+              id="sale_order_line_menu"
+              parent="sale.sale_order_menu"
+              sequence="2"
+              groups="sales_team.group_sale_salesman"/>
+
+    <record id="action_processing_multi_sale_order" model="ir.actions.server">
+        <field name="name">Processing SO</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_processing_multi_sale_order()
+        </field>
+    </record>
+
+    <record id="action_pending_multi_sale_order" model="ir.actions.server">
+        <field name="name">Pending SO</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_pending_multi_sale_order()
+        </field>
+    </record>
+
+    <record id="action_resume_multi_sale_order" model="ir.actions.server">
+        <field name="name">Resume SO</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_resume_multi_sale_order()
+        </field>
+    </record>
+
+    <record id="action_cancel_multi_sale_order" model="ir.actions.server">
+        <field name="name">Cancel SO</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_cancel_multi_sale_order()
+        </field>
+    </record>
+
+    <record id="action_confirm_address_sale_order" model="ir.actions.server">
+        <field name="name">Confirm Address</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref="asiup_shopbase_integration.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_confirm_multi_shipping_address()
+        </field>
+    </record>
+
+</odoo>

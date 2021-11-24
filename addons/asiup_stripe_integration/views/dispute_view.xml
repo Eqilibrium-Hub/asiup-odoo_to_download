@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <record id="dispute_form_stripe_inherit_view" model="ir.ui.view">
+        <field name="name">dispute.form.inherit</field>
+        <field name="model">dispute</field>
+        <field name="inherit_id" ref="asiup_dispute.dispute_form_view"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='dispute_source']" position="after">
+                <field name="stripe_dispute" string="Stripe Dispute ID" attrs="{'invisible': [('dispute_source','!=', 'stripe')]}"/>
+                <field name="stripe_dispute_state" string="Stripe Dispute State" attrs="{'invisible': [('dispute_source','!=', 'stripe')]}"/>
+                <field name="stripe_payment_dispute_reason" string="Stripe Dispute Payment Reason" attrs="{'invisible': [('dispute_source','!=', 'stripe')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

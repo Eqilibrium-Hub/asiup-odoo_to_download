@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_attribute_view_form_inherit" model="ir.ui.view">
+        <field name="name">product.attribute.form.inherit</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='value_ids']/tree/field[@name='html_color']" position="after">
+                <field name="is_att_set"/>
+                <field name="attribute_set_id" attrs="{'invisible': [('is_att_set', '!=', True)]}"
+                       context="{'default_name': name, 'default_product_attribute_id': parent.id}"/>
+                <field name="code"
+                       attrs="{'required': [('is_att_set', '!=', True)], 'readonly': [('is_att_set', '=', True)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_attribute_set_form_view" model="ir.ui.view">
+        <field name="name">product.attribute.set.view.form</field>
+        <field name="model">product.attribute.set</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="product_attribute_id"/>
+                    </group>
+<!--                    <field name="attribute_value_ids" nolabel="1"-->
+<!--                           domain="[('attribute_id', '=', product_attribute_id), ('is_att_set', '=', False)]"-->
+<!--                           widget="many2many" can_create="false" can_write="false"/>-->
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="product_attribute_set_tree_view" model="ir.ui.view">
+        <field name="name">product.attribute.set.view.tree</field>
+        <field name="model">product.attribute.set</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="product_attribute_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_attribute_set_action" model="ir.actions.act_window">
+        <field name="name">Product Attribute Set</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.attribute.set</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="product_attribute_set_menu" name="Product Attribute Set"
+              parent="sale.prod_config_main" groups="product.group_product_variant" sequence="2"
+              action="product_attribute_set_action"/>
+
+</odoo>

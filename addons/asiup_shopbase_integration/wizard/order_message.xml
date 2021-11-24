@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="order_message_wizard" model="ir.ui.view">
+        <field name="name">order.message.wizard.form</field>
+        <field name="model">order.message.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Message">
+                <field name="type_message" invisible="1"/>
+                <field name="name"/>
+                <field name="pending_reason" nolable="1" widget="many2many_tags" attrs="{'invisible':[('type_message','!=','pending_order')]}"/>
+                <footer>
+                    <button name="pending_sale_order" type="object" string="YES" class="oe_highlight" attrs="{'invisible':[('type_message','!=','pending_order')]}"/>
+                    <button name="cancel_sale_order" type="object" string="YES"
+                        class="oe_highlight" attrs="{'invisible':[('type_message','!=','cancel_order')]}"/>
+                    <button string="NO" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

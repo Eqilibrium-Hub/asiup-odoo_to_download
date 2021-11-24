@@ -1,0 +1,64 @@
+<odoo>
+    <!--    <record id="sale.menu_sale_report" model="ir.ui.menu">-->
+    <!--        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>-->
+    <!--    </record>-->
+
+    <record id="supplier_invoice_from_view" model="ir.ui.view">
+        <field name="name">Supplier Invoice</field>
+        <field name="model">asiup.supplier.invoice</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Supplier Invoice">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <h2>
+                        <field name="display_name" readonly="1"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="supplier"/>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="type"/>
+                            <field name="ffm_date"/>
+                            <field name="amount"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="supplier_invoice_tree_view" model="ir.ui.view">
+        <field name="name">asiup.supplier.invoice.tree</field>
+        <field name="model">asiup.supplier.invoice</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="ffm_date"/>
+                <field name="supplier"/>
+                <field name="description"/>
+                <field name="amount"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="supplier_sale_invoice_action" model="ir.actions.act_window">
+        <field name="name">Supplier</field>
+        <field name="res_model">asiup.supplier.invoice</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_sale_supplier_invoice"
+              name="Supplier"
+              parent="sale.sale_menu_root"
+              sequence="3"
+              action="supplier_sale_invoice_action"/>
+
+</odoo>

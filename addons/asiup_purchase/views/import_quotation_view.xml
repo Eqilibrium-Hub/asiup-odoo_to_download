@@ -1,0 +1,36 @@
+<odoo>
+    <record id="asiup_import_tracking_number_wizard" model="ir.ui.view">
+        <field name="name">Import Quotation</field>
+        <field name="model">import.quotation</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Import Tracking Number">
+                <h3>
+                    Upload File Quotation
+                </h3>
+                <field name="file_name" invisible="1"/>
+                <field name="file_upload" filename="file_name" nolabel="1"/>
+                <footer>
+                    <button name="action_import_quotation" string="Import" type="object"
+                            class="oe_highlight"/>
+                    <button name="template_file_import_example" string="Get Template" type="object"
+                            class="oe_highlight"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="asiup_purchase_import_quotation_action" model="ir.actions.act_window">
+        <field name="name">Import Quotation</field>
+        <field name="res_model">import.quotation</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem name="Import Quotation"
+              id="asiup_purchase_import_quotation"
+              parent="asiup_purchase.menu_root"
+              action="asiup_purchase_import_quotation_action"/>
+
+</odoo>

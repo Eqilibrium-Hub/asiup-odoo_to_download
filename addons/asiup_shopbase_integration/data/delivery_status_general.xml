@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="delivery_status_general_pending" model="delivery.status.general">
+            <field name="color">4</field>
+            <field name="code">pending</field>
+            <field name="name">Pending</field>
+        </record>
+
+        <record id="delivery_status_general_notfound" model="delivery.status.general">
+            <field name="color">3</field>
+            <field name="code">notfound</field>
+            <field name="name">Not Found</field>
+        </record>
+
+        <record id="delivery_status_general_transit" model="delivery.status.general">
+            <field name="color">4</field>
+            <field name="code">transit</field>
+            <field name="name">Transit</field>
+        </record>
+
+        <record id="delivery_status_general_pickup" model="delivery.status.general">
+            <field name="color">4</field>
+            <field name="code">pickup</field>
+            <field name="name">Pickup</field>
+        </record>
+
+        <record id="delivery_status_general_delivered" model="delivery.status.general">
+            <field name="color">10</field>
+            <field name="code">delivered</field>
+            <field name="name">Delivered</field>
+        </record>
+
+        <record id="delivery_status_general_expired" model="delivery.status.general">
+            <field name="color">11</field>
+            <field name="code">expired</field>
+            <field name="name">Expired</field>
+        </record>
+
+        <record id="delivery_status_general_undelivered" model="delivery.status.general">
+            <field name="color">11</field>
+            <field name="code">undelivered</field>
+            <field name="name">Undelivered</field>
+        </record>
+
+        <record id="delivery_status_general_exception" model="delivery.status.general">
+            <field name="color">4</field>
+            <field name="code">exception</field>
+            <field name="name">Exception</field>
+        </record>
+
+        <record id="delivery_status_general_alert" model="delivery.status.general">
+            <field name="color">11</field>
+            <field name="code">alert</field>
+            <field name="name">Alert</field>
+        </record>
+
+         <record id="delivery_status_general_error" model="delivery.status.general">
+            <field name="color">1</field>
+            <field name="code">error</field>
+            <field name="name">Error</field>
+        </record>
+
+    </data>
+</odoo>

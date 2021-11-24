@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="store_shopbase_tree_view" model="ir.ui.view">
+        <field name="name">store.shopbase.tree.view</field>
+        <field name="model">store.shopbase</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="shopbase_url"/>
+                <field name="shopbase_id"/>
+                <field name="shop_owner"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="store_shopbase_form_view" model="ir.ui.view">
+        <field name="name">store.shopbase.form.view</field>
+        <field name="model">store.shopbase</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Connected" attrs="{'invisible': [('active', '!=', True)]}"/>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="shopbase_url"/>
+                            <field name="shopbase_apikey"/>
+                        </group>
+                        <group>
+                            <field name="shopbase_password" password="True"/>
+                            <field name="shared_secret" password="True"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="shopbase_information" string="Shopbase Information">
+                             <group>
+                                <group>
+                                    <field name="shopbase_id"/>
+                                    <field name="shop_owner"/>
+                                </group>
+                                <group>
+                                    <field name="email" />
+                                    <field name="phone"/>
+                                </group>
+                             </group>
+                        </page>
+                        <page string="Products" name="list_product">
+                            <field name="product_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="shopbase_product_id"/>
+                                    <field name="shopbase_product_page"/>
+                                    <field name="shopbase_inventory"/>
+                                    <field name="continue_selling_over_stock" widget="boolean_toggle"/>
+                                    <field name="is_connect_to_shopbase" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Webhooks" name="list_webhook">
+                            <field name="webhook_ids" nolabel="1"
+                                   context="{'form_view_ref': 'asiup_product.shopbase_webhook_form_view',
+                                   'form_view_ref': 'asiup_product.shopbase_webhook_tree_view'}">
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="store_shopbase_action" model="ir.actions.act_window">
+        <field name="name">Store Shopbase</field>
+        <field name="res_model">store.shopbase</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="store_shopbase_menu"
+              name="Store Shopbase"
+              parent="shopbase_menu_item"
+              action="store_shopbase_action"
+              sequence="10"/>
+</odoo>

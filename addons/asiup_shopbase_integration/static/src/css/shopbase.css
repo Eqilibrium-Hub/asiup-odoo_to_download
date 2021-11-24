@@ -1,0 +1,13 @@
+.show .dropdown-menu .dropdown-header {
+    color: #4c4c4c;
+    font-size: inherit;
+    background-color: #eee;
+}
+
+.o_field_one2many .o_list_view .o_list_table tbody > tr > td:not(.o_list_record_selector):not(.o_handle_cell):not(.o_list_button){
+    white-space: pre-wrap !important;
+}
+
+.tracking_number_general{
+    white-space: pre-line !important;
+}

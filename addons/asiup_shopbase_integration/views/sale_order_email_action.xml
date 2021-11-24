@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_line_view_form_asiup_tracking" model="ir.ui.view">
+        <field name="name">sale.order.line.form</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="asiup_shopbase_integration.sale_order_line_view_form_asiup"/>
+        <field name="arch" type="xml">
+<!--            <xpath expr="//field[@name='tkm_ffm_status']" position="after">-->
+<!--                <field name="is_send_mail" widget="boolean_toggle" />-->
+<!--            </xpath>-->
+             <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_view_send_mail" type="object" icon="fa-refresh">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="send_mail_count"/></span>
+                        <span class="o_stat_text">Mail Send</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_line_view_tree_asiup_tracking" model="ir.ui.view">
+        <field name="name">sale.order.line.tree</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="asiup_shopbase_integration.view_order_line_tree_asiup"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='address_error']" position="after">
+                <field name="is_send_mail" widget="boolean_toggle" string="Send Mail" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+        <record id="model_sale_order_action_send_mail_success" model="ir.actions.server">
+        <field name="name">Send Mail Order Success</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_server_mail_order_success()</field>
+    </record>
+</odoo>

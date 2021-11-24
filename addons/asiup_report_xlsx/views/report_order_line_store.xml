@@ -1,0 +1,118 @@
+<odoo>
+    <record id="sale_order_line_store_report_wizard" model="ir.ui.view">
+        <field name="name">Dashboard</field>
+        <field name="model">report.order.line.store.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard" create="false">
+                <sheet>
+                    <field name="is_report_generate" invisible="1"/>
+                    <field name="is_product_report" invisible="1"/>
+                    <button name="get_report_store" string="Get Report" type="object" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="order_status" options="{'no_create_edit': True}" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="store_ids" options="{'no_create_edit': True}" widget="many2many_tags"/>
+                            <!--                            <field name="woo_store_ids" options="{'no_create_edit': True}" widget="many2many_tags"/>-->
+                        </group>
+                        <group>
+                            <field name="product_ids" options="{'no_create_edit': True}" widget="many2many_tags"/>
+                            <!--                            <field name="shopbase_store_ids" options="{'no_create_edit': True}" widget="many2many_tags"/>-->
+                        </group>
+                    </group>
+                    <group col="6">
+                        <field name="order_total" readonly="1"
+                               attrs="{'invisible':[('is_report_generate', '=', False)]}"/>
+                        <field name="revenue_total" widget="monetary" readonly="1"
+                               attrs="{'invisible':[('is_report_generate', '=', False)]}"/>
+                        <field name="aov" readonly="1"
+                               attrs="{'invisible':[('is_report_generate', '=', False)]}"/>
+                    </group>
+                    <field name="report_line_detail" attrs="{'invisible':['|',('is_report_generate', '=', False),('is_product_report', '=', True)]}"
+                           readonly="1">
+                        <tree editable="bottom" create="0" edit="0" default_order="revenue desc">
+                            <field name="store"/>
+                            <field name="order_count" sum="Total"/>
+                            <field name="revenue" widget="monetary" sum="Total revenue"/>
+                            <field name="aov"/>
+                        </tree>
+                    </field>
+                    <field name="report_line_product_detail"
+                           attrs="{'invisible':['|',('is_report_generate','=', False),('is_product_report','!=', True)]}" readonly="1">
+                        <tree editable="bottom" create="0" edit="0" default_order="revenue desc">
+                            <field name="product_label"/>
+                            <field name="order_count" sum="Total"/>
+                            <field name="revenue" widget="monetary" sum="Total revenue"/>
+                            <field name="aov"/>
+                        </tree>
+                    </field>
+                    <footer>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    <record id="sale_report_dashboard_action" model="ir.actions.act_window">-->
+    <!--        <field name="name">Dashboard</field>-->
+    <!--        <field name="res_model">report.order.line.store.wizard</field>-->
+    <!--        <field name="view_mode">form</field>-->
+    <!--        <field name="target">new</field>-->
+    <!--        <field name="context">{}</field>-->
+    <!--    </record>-->
+
+    <record id="sale_report_dashboard_action" model="ir.actions.server">
+        <field name="name">Dashboard</field>
+        <field name="model_id" ref="asiup_report_xlsx.model_report_order_line_store_wizard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.get_form_view_store_dashboard_report()
+        </field>
+    </record>
+
+
+    <record id="sale_store_report_dashboard_server_action" model="ir.actions.server">
+        <field name="name">Store</field>
+        <field name="model_id" ref="asiup_report_xlsx.model_report_order_line_store_wizard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.get_form_view_store_dashboard_report()
+        </field>
+    </record>
+
+    <record id="sale_product_report_dashboard_server_action" model="ir.actions.server">
+        <field name="name">Store</field>
+        <field name="model_id" ref="asiup_report_xlsx.model_report_order_line_store_wizard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.get_form_view_product_dashboard_report()
+        </field>
+    </record>
+
+    <menuitem id="menu_sale_report_dashboard"
+              name="Dashboard"
+              parent="sale.sale_menu_root"
+              sequence="0"
+              action="sale_report_dashboard_action"/>
+
+    <menuitem id="menu_sale_report_by_store"
+              name="Store"
+              parent="menu_sale_report_dashboard"
+              sequence="0"
+              action="sale_store_report_dashboard_server_action"/>
+
+    <menuitem id="menu_sale_report_by_product"
+              name="Product"
+              parent="menu_sale_report_dashboard"
+              sequence="1"
+              action="sale_product_report_dashboard_server_action"/>
+
+</odoo>

@@ -1,0 +1,20 @@
+<odoo noupdate="1">
+    <record id="job_function_queue_job__test_job" model="queue.job.function">
+        <field name="model_id" ref="queue_job.model_queue_job" />
+        <field name="method">_test_job</field>
+    </record>
+
+    <record id="job_queue_requeue_failed_queue_job" forcecreate="True" model="ir.cron">
+        <field name="name">Job queue: Requeue Failed Job</field>
+        <field name="model_id" ref="model_queue_job"/>
+        <field name="state">code</field>
+        <field name="code">model.job_requeue_failed_job_in_cron()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

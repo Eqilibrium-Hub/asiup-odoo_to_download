@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.template.form.inherit.asiup</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="priority">40</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='barcode']" position="replace">
+                    <field name="product_template_code" required="1"/>
+                </xpath>
+                <xpath expr="//page[@name='general_information']//field[@name='product_variant_id']" position="after">
+                    <field name="tag_ids" widget="many2many_tags"
+                           options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Add your tag ..."/>
+                </xpath>
+                <!--                <xpath expr="//page[@name='general_information']//field[@name='description']" position="replace">-->
+                <!--                    <field name="sale_description" nolabel="1"/>-->
+                <!--                </xpath>-->
+                <xpath expr="//field[@name='type']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_template_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.template.form.view.inherit.asiup</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="priority">40</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sale_ok']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='purchase_ok']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sale.product_template_action" model="ir.actions.act_window">
+            <field name="name">Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_id" ref="product.product_template_kanban_view"/>
+            <field name="search_view_id" ref="product.product_template_search_view"/>
+            <field name="context">{"search_default_filter_to_sell": 0,
+                "sale_multi_pricelist_product_template": 1,
+                "search_default_consumable": 1,}
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new product
+                </p>
+                <p>
+                    You must define a product for everything you sell or purchase,
+                    whether it's a storable product, a consumable or a service.
+                </p>
+            </field>
+        </record>
+
+        <record id="product_template_kanban_inherit_view" model="ir.ui.view">
+            <field name="name">product.template.kanban.tag</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//strong[hasclass('o_kanban_record_title')]" position="after">
+                    <span class="oe_kanban_list_many2many">
+                        <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    </span>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

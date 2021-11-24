@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <record id="email_template_form_inherit" model="ir.ui.view">
+            <field name="name">mail.template.form.inherit.asiup</field>
+            <field name="model">mail.template</field>
+            <field name="inherit_id" ref="mail.email_template_form"/>
+            <field name="priority">40</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='model_id']" position="before">
+                    <field name="condition"/>
+                </xpath>
+                <xpath expr="//field[@name='model_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+                 <xpath expr="//field[@name='model']" position="attributes">
+                     <attribute name="invisible">0</attribute>
+                 </xpath>
+            </field>
+    </record>
+
+    <record id="action_asiup_view_mail_mail" model="ir.actions.act_window">
+        <field name="name">Emails</field>
+        <field name="res_model">mail.mail</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tracking_mail', '=', True)]</field>
+        <field name="context">{'default_tracking_mail': 1}</field>
+        <field name="search_view_id" ref="mail.view_mail_search"/>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_asiup_email_template_tree_all">
+        <field name="name">Templates</field>
+        <field name="res_model">mail.template</field>
+        <field name="view_mode">form,tree</field>
+        <field name="domain">[('tracking_mail_template', '=', True)]</field>
+        <field name="context">{'default_tracking_mail_template': 1}</field>
+        <field name="view_id" ref="mail.email_template_tree" />
+        <field name="search_view_id" ref="mail.view_email_template_search"/>
+    </record>
+
+    <menuitem id="asiup_email_sms_menu" name="Email &amp; Sms" sequence="23"/>
+        <menuitem id="asiup_email_menu" name="Email" sequence="10" parent="asiup_email_sms_menu"/>
+            <menuitem id="asiup_list_email_menu" name="Email" sequence="10"
+                      action="action_asiup_view_mail_mail" parent="asiup_email_menu"/>
+            <menuitem id="asiup_email_template_menu" name="Email Template" sequence="20"
+                      action="action_asiup_email_template_tree_all" parent="asiup_email_menu"/>
+            <menuitem id="asiup_email_server_menu" name="Outgoing Mail Servers" sequence="30"
+                      action="base.action_ir_mail_server_list" parent="asiup_email_menu"/>
+
+</odoo>

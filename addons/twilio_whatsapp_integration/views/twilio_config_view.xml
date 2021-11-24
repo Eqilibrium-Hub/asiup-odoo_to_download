@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+         <record id="sms_report_inherited_in_twilio_whatsapp_form_view" model="ir.ui.view">
+            <field name="name">wk.sms.repor.form.inherited.Twilio</field>
+            <field name="model">sms.report</field>
+            <field name="inherit_id" ref="sms_notification.sms_report_form_view"/>          
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='sms_info']" position="inside">
+                    <group string="Twilio Related Inforamtion" attrs="{'invisible':[('sms_gateway','!=','twilio_whatsapp')]}">
+                        <field name="id" invisible="1"/>
+                        <field name="sms_gateway" invisible="1"/>
+                        <field name="twilio_whatsapp_sms_id" readonly="1"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sms_mail_server_twilio_whatsapp_formview" model="ir.ui.view">
+            <field name="name">sms.mail.server.twilio.config</field>
+            <field name="model">sms.mail.server</field>   
+            <field name="inherit_id" ref="sms_notification.sms_mail_server_formview"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='conn_info']" position="after">
+                    <group string='Security And Authentication' attrs="{'invisible':[('gateway','!=','twilio_whatsapp')]}">
+                        <field name="twilio_whatsapp_number" placeholder="Twilio Phone Number(e.g. +12044993370)" attrs="{'required':[('gateway','=','twilio_whatsapp')]}"/>
+                        <field name="account_whatsapp_sid" attrs="{'required':[('gateway','=','twilio_whatsapp')]}"/>
+                        <field name="auth_whatsapp_token" attrs="{'required':[('gateway','=','twilio_whatsapp')]}"/>
+                        <button name="test_conn_twilio_whatsapp" string="Test Connection" type="object"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

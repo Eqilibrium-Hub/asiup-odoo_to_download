@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+     <record id="product_templatel_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority">10000</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_view_shopbase_product" type="object" icon="fa-refresh">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="product_store_count"/></span>
+                        <span class="o_stat_text">Shopbase Product</span>
+                    </div>
+                </button>
+            </xpath>
+<!--            <xpath expr="//header" position="inside">-->
+<!--                <button string="Update Shopbase Price" type="object" name="open_update_product_price_wizard"-->
+<!--                        attrs="{'invisible': ['|', ('attribute_line_ids', '&lt;=', 0), ('is_product_variant', '=', True)]}"-->
+<!--                        groups="product.group_product_variant" class="oe_highlight"/>-->
+<!--            </xpath>-->
+            <xpath expr="//div[@name='pricing']" position="after">
+                <label for="compare_price"/>
+                <div name="compare_price">
+                    <field name="compare_price" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                </div>
+            </xpath>
+        </field>
+     </record>
+
+     <record id="product_product_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="priority">10000</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_view_shopbase_variant" type="object"
+                        context="{'tree_view_ref': 'asiup_shopbase_ntegration.product_variant_store_tree_view'}"
+                        icon="fa-refresh">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="variant_store_count"/></span>
+                        <span class="o_stat_text">Shopbase Variant</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+     </record>
+
+    <record id="product_variant_store_tree_view" model="ir.ui.view">
+        <field name="name">product.variant.store.view.tree</field>
+        <field name="model">product.variant.store</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0">
+                <field name="product_variant_id"/>
+                <field name="shopbase_store_id"/>
+                <field name="variant_sku"/>
+                <field name="shopbase_store_id"/>
+                <field name="shopbase_variant_id"/>
+                <field name="lst_price"/>
+                <field name="is_connect_to_shopbase"  widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_store_form_view" model="ir.ui.view">
+        <field name="name">product.store.view.form</field>
+        <field name="model">product.store</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                         <button name="action_view_product_shopbase_web" type="object" class="oe_stat_button" icon="fa-globe icon"
+                                 attrs="{'invisible': [('shopbase_product_id', '=', False)]}">
+                             <div class="o_field_widget o_stat_info">
+                                 <span class="o_stat_text">Product Page</span>
+                             </div>
+                        </button>
+                    </div>
+                    <group col="4">
+                        <field name="product_id" required="1"/>
+                        <field name="shopbase_store_id" required="1"/>
+                        <field name="shopbase_product_id"/>
+                        <field name="shopbase_product_page"/>
+                        <field name="shopbase_inventory"/>
+                        <field name="is_connect_to_shopbase" widget="boolean_toggle"/>
+                        <field name="continue_selling_over_stock" colspan="4" widget="boolean_toggle"/>
+                    </group>
+                    <notebook>
+                        <page string="Variants">
+                           <group col="4">
+                                <field name="product_variant_ids" nolabel="1" colspan="4">
+                                    <tree editable="bottom" create="0">
+                                        <field name="product_variant_id"/>
+                                        <field name="variant_sku"/>
+                                        <field name="lst_price"/>
+                                        <field name="compare_price"/>
+                                        <field name="shopbase_store_id"/>
+                                        <field name="shopbase_variant_id"/>
+                                        <field name="is_connect_to_shopbase"  widget="boolean_toggle"/>
+                                    </tree>
+                                    <form>
+                                        <notebook>
+                                            <page string="Shopbase Info">
+                                                <group col="4">
+                                                    <field name="product_variant_id"/>
+                                                    <field name="variant_sku"/>
+                                                    <field name="lst_price"/>
+                                                    <field name="compare_price"/>
+                                                    <field name="shopbase_store_id"/>
+                                                    <field name="shopbase_variant_id"/>
+                                                    <field name="is_connect_to_shopbase"  widget="boolean_toggle"/>
+                                                    <field name="product_store_id" invisible="1"/>
+                                                </group>
+                                            </page>
+                                            <page string="Images">
+                                                <group string="Images Info" colspan="4">
+                                                    <field name="shopbase_image_ids"
+                                                           context="{'default_shopbase_variant_id':id,'default_shopbase_template_id':product_store_id}"
+                                                           mode="kanban" options="{'create_text':'Add a Media'}" nolabel="1">
+                                                    </field>
+                                                </group>
+                                            </page>
+                                        </notebook>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Images">
+                            <group string="Images Info" colspan="4">
+                                <field name="shopbase_image_ids" context="{'default_shopbase_template_id':id}" mode="kanban"
+                                       options="{'create_text':'Add a Media','no_create_edit':True}" nolabel="1">
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="product_store_tree_view" model="ir.ui.view">
+        <field name="name">product.store.view.tree</field>
+        <field name="model">product.store</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="product_id"/>
+                <field name="shopbase_store_id"/>
+                <field name="shopbase_product_id"/>
+                <field name="shopbase_product_page"/>
+                <field name="shopbase_inventory"/>
+                <field name="continue_selling_over_stock" widget="boolean_toggle"/>
+                <field name="is_connect_to_shopbase"  widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_store_search_view" model="ir.ui.view">
+        <field name="name">product.store.search</field>
+        <field name="model">product.store</field>
+        <field name="arch" type="xml">
+            <search string="Search Description">
+                <field name="product_id" />
+                <field name="shopbase_store_id" />
+                <separator/>
+                <filter string="Shopbase Connected" domain="[('is_connect_to_shopbase', '=', True)]" name="is_connect_to_shopbase"/>
+                <separator/>
+                <group expand="1" string="Group By">
+                    <filter string="Shopbase Store" name='shopbase_store_id' context="{'group_by':'shopbase_store_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="product_store_action" model="ir.actions.act_window">
+        <field name="name">Product Store</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.store</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="product_store_menu" name="Shopbase Product" parent="shopbase_menu_item"
+              groups="product.group_product_variant" action="product_store_action"  sequence="20"/>
+
+    <menuitem
+            action="product.product_category_action_form" id="menu_product_category_config_sale"
+            parent="sale.prod_config_main" sequence="4" />
+</odoo>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="tracking_courier_tree_view" model="ir.ui.view">
+        <field name="name">tracking.courier.tree.view</field>
+        <field name="model">tracking.courier</field>
+        <field name="arch" type="xml">
+            <tree expand="1">
+                <field name="name"/>
+                <field name="carrier_code"/>
+                <field name="country_id"/>
+                <field name="country_code"/>
+                <field name="phone"/>
+                <field name="type"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tracking_courier_form_view" model="ir.ui.view">
+        <field name="name">tracking.courier.form.view</field>
+        <field name="model">tracking.courier</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="carrier_code"/>
+                        <field name="carrier_key"/>
+                        <field name="carrier_paypal_code"/>
+                        <field name="country_id"/>
+                        <field name="country_code"/>
+                        <field name="phone"/>
+                        <field name="type"/>
+                        <field name="homepage"/>
+                        <field name="carrier_url" colspan="4"/>
+                        <field name="picture" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tracking_courier_search_view" model="ir.ui.view">
+        <field name="name">tracking.courier.view.search</field>
+        <field name="model">tracking.courier</field>
+        <field name="arch" type="xml">
+            <search string="Search Description">
+                <field name="name"/>
+                <field name="carrier_code"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="tracking_courier_action" model="ir.actions.act_window">
+        <field name="name">Courier List</field>
+        <field name="res_model">tracking.courier</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_tracking_number_config"
+              parent="sale.menu_sale_config"
+              sequence="5"
+              name="Tracking Number"/>
+
+    <menuitem id="tracking_courier_menu"
+              name="Courier List"
+              parent="menu_tracking_number_config"
+              action="tracking_courier_action"
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <menuitem id="shopbase_menu_item" name="Shopbase" sequence="15"
+              web_icon="asiup_shopbase_integration,static/description/icon.png"/>
+
+        <!--Main of Configuration -->
+    <menuitem id="menu_shopbase_configuration" name="Configuration" parent="shopbase_menu_item" sequence="100"/>
+<!--    Hide some menu-->
+    <record id="stock.menu_stock_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+    <record id="sale.menu_sale_quotations" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+    <record id="utm.menu_link_tracker_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+    <record id="sale.menu_sale_invoicing" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+     <record id="common_connector_library.menu_log_book_ept" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0, [ref('asiup_shopbase_integration.group_asiup_hidden')])]"/>
+    </record>
+
+    <menuitem id="menu_sale_process" name="Sales Process" sequence="2"
+              parent="sale.sale_menu_root"/>
+
+</odoo>
